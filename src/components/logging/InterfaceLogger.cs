@@ -1,6 +1,6 @@
 namespace Tusba.Components.Logging
 {
-	interface InterfaceLogger
+	public interface InterfaceLogger
 	{
 		void Log(object target);
 	}

@@ -2,11 +2,14 @@ using System;
 
 namespace Tusba.Components.Logging
 {
-	public class ConsoleLogger : InterfaceLogger
+	public class FileLogger : InterfaceLogger
 	{
+		public FileLogger(string filePath)
+		{
+		}
+
 		public void Log(object target)
 		{
-			Console.WriteLine(target);
 		}
 	}
 }
