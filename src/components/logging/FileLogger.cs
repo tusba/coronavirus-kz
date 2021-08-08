@@ -11,6 +11,7 @@ namespace Tusba.Components.Logging
 		protected string dirPath = "";
 		protected string fileName;
 
+		private string fullDirName;
 		private string fullFileName;
 
 		public FileLogger(string fileName)
@@ -23,6 +24,8 @@ namespace Tusba.Components.Logging
 
 		public string Directory
 		{
+			get => fullDirName;
+
 			set
 			{
 				dirPath = value;
@@ -49,7 +52,8 @@ namespace Tusba.Components.Logging
 
 		private void updateFilePath()
 		{
-			fullFileName = Path.Combine(baseDir, dirPath, fileName);
+			fullDirName = Path.Combine(baseDir, dirPath);
+			fullFileName = Path.Combine(fullDirName, fileName);
 		}
 	}
 }
