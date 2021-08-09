@@ -11,8 +11,8 @@ namespace Tusba.Components.Logging
 		protected string dirPath = "";
 		protected string fileName;
 
-		private string fullDirName;
-		private string fullFileName;
+		private string fullDirName = "";
+		private string fullFileName = "";
 
 		public FileLogger(string fileName)
 		{

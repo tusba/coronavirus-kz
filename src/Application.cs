@@ -2,6 +2,7 @@
 using System.IO;
 using Tusba.Components.Configuration;
 using Tusba.Components.Decorators;
+using Tusba.Components.Http;
 using Tusba.Components.Logging;
 
 namespace CoronavirusKz
@@ -12,16 +13,19 @@ namespace CoronavirusKz
 		private readonly InterfaceLogger InteractiveLogger = new ConsoleLogger();
 		private readonly InterfaceLogger PersistentLogger;
 
+		private readonly string? startFromPostId;
 		private readonly DateTime startedAt = DateTime.Now;
 
-		private Application()
+		private Application(string? postId)
 		{
+			startFromPostId = postId;
+
 			FileLogger appFileLogger = new FileLogger(Configuration.Get("app.log.file"));
 			Bootstrap(appFileLogger);
 
 			PersistentLogger = new DateTimeLogDecorator(appFileLogger);
 			PersistentLogger.Log(new String('-', 66));
-			PersistentLogger.Log("Started");
+			PersistentLogger.Log("Started" + (startFromPostId is null ? "" : " from post ID=" + startFromPostId));
 		}
 
 		private void Bootstrap(FileLogger appFileLogger)
@@ -36,12 +40,13 @@ namespace CoronavirusKz
 
 		private void Run()
 		{
-			// TODO
+			InterfaceHttpGet indexPage = new WebIndexPage(Configuration.Get("vendor.index.url"));
+			InteractiveLogger.Log(indexPage.Get(startFromPostId)); // TODO
 		}
 
 		public static void Main(string[] args)
 		{
-			Application app = new Application();
+			Application app = new Application(args.Length > 0 ? args[0] : null);
 			app.Run();
 
 			string finishedAt = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
