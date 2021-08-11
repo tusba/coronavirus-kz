@@ -41,7 +41,10 @@ namespace CoronavirusKz
 		private void Run()
 		{
 			InterfaceHttpGet indexPage = new WebIndexPage(Configuration.Get("vendor.index.url"));
-			InteractiveLogger.Log(indexPage.Get(startFromPostId)); // TODO
+			// TODO try catch Get()
+			string responseBody = indexPage.Get(startFromPostId);
+			// TODO store responseBody
+			InteractiveLogger.Log("Got " + responseBody.Length + " bytes"); // TODO remove
 		}
 
 		public static void Main(string[] args)

@@ -9,12 +9,26 @@ namespace Tusba.Components.Http
 
 		private readonly string baseUrl;
 
-		public WebIndexPage(string baseUrl) => this.baseUrl = baseUrl;
+		public WebIndexPage(string baseUrl)
+		{
+			this.baseUrl = baseUrl;
 
+			if (this.baseUrl.StartsWith("https"))
+			{
+				// fix: The request was aborted: Could not create SSL/TLS secure channel.
+				ServicePointManager.Expect100Continue = true;
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+			}
+		}
+
+		/**
+		 * @throws Exception
+		 */
 		public string Get(string? postId)
 		{
 			string url = baseUrl + (postId is null ? "" : "/" + postId);
-			return url;
+
+			return Client.GetStringAsync(url).Result;
 		}
 	}
 }
