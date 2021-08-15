@@ -21,6 +21,11 @@ namespace Tusba.Components.Http
 			}
 		}
 
+		public void Dispose()
+		{
+			Client.Dispose();
+		}
+
 		/**
 		 * @throws Exception
 		 */

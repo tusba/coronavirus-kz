@@ -46,19 +46,26 @@ namespace CoronavirusKz
 		 */
 		private void Run()
 		{
-			InterfaceHttpGet indexPage = new WebIndexPage(Configuration.Get("vendor.index.url"));
-			string responseBody;
-
-			try
-			{
-				responseBody = indexPage.Get(startFromPostId);
-			}
-			catch (Exception e)
-			{
-				throw new ApplicationRuntimeException("fetch index page", e);
-			}
-
+			string responseBody = FetchIndexPage();
 			PersistentLogger.Log("Got " + responseBody.Length + " bytes");
+		}
+
+		/**
+		 * @throws ApplicationRuntimeException
+		 */
+		private string FetchIndexPage()
+		{
+			using (InterfaceHttpGet indexPage = new WebIndexPage(Configuration.Get("vendor.index.url")))
+			{
+				try
+				{
+					return indexPage.Get(startFromPostId);
+				}
+				catch (Exception e)
+				{
+					throw new ApplicationRuntimeException("fetch index page", e);
+				}
+			}
 		}
 
 		public static void Main(string[] args)
