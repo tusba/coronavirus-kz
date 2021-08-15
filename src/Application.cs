@@ -13,6 +13,7 @@ namespace CoronavirusKz
 		private static readonly InterfaceConfigurationReader Configuration = new SystemConfiguration();
 		private static readonly InterfaceLogger InteractiveLogger = new ConsoleLogger();
 		private static readonly InterfaceLogger PersistentLogger;
+		private static readonly InterfaceLogger ErrorLogger;
 
 		private readonly string? startFromPostId;
 		private readonly DateTime startedAt = DateTime.Now;
@@ -28,7 +29,8 @@ namespace CoronavirusKz
 		static Application()
 		{
 			FileLogger appFileLogger = new FileLogger(Configuration.Get("app.log.file"));
-			appFileLogger.Directory = Configuration.Get("app.log.directory");
+			FileLogger errorFileLogger = new FileLogger(Configuration.Get("error.log.file"));
+			errorFileLogger.Directory = appFileLogger.Directory = Configuration.Get("app.log.directory");
 
 			if (!Directory.Exists(appFileLogger.Directory))
 			{
@@ -36,6 +38,7 @@ namespace CoronavirusKz
 			}
 
 			PersistentLogger = new DateTimeLogDecorator(appFileLogger);
+			ErrorLogger = new DateTimeLogDecorator(errorFileLogger);
 		}
 
 		/**
@@ -78,6 +81,7 @@ namespace CoronavirusKz
 			string message = e.Message + (innerException is null ? "" : ": " + innerException.Message);
 			InteractiveLogger.Log("Error: " + message);
 			PersistentLogger.Log("ERROR:\t" + message);
+			ErrorLogger.Log(e + Environment.NewLine);
 
 			Environment.Exit(0);
 		}
