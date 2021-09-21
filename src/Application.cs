@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Tusba.Components.Configuration;
 using Tusba.Components.Decorators;
 using Tusba.Components.Exceptions;
@@ -44,22 +45,22 @@ namespace CoronavirusKz
 		/**
 		 * @throws ApplicationRuntimeException
 		 */
-		private void Run()
+		private async Task Run()
 		{
-			string responseBody = FetchIndexPage();
+			string responseBody = await FetchIndexPage();
 			PersistentLogger.Log($"Got {responseBody.Length} bytes");
 		}
 
 		/**
 		 * @throws ApplicationRuntimeException
 		 */
-		private string FetchIndexPage()
+		private async Task<string> FetchIndexPage()
 		{
 			using (InterfaceHttpGet indexPage = new WebIndexPage(Configuration.Get("vendor.index.url")))
 			{
 				try
 				{
-					return indexPage.Get(startFromPostId);
+					return await indexPage.Get(startFromPostId);
 				}
 				catch (Exception e)
 				{
@@ -68,12 +69,12 @@ namespace CoronavirusKz
 			}
 		}
 
-		public static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += HandleException;
 
 			Application app = new Application(args.Length > 0 ? args[0] : null);
-			app.Run();
+			await app.Run();
 
 			string finishedAt = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
 			PersistentLogger.Log("Finished");

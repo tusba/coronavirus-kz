@@ -13,8 +13,8 @@ namespace test
 		{
 			InterfaceHttpGet client = new WebIndexPage(url);
 
-			Assert.Throws<ArgumentException>(() => {
-				client.Get(null);
+			Assert.ThrowsAsync<ArgumentException>(async () => {
+				await client.Get(null);
 			});
 		}
 
@@ -25,19 +25,19 @@ namespace test
 		{
 			InterfaceHttpGet client = new WebIndexPage(url);
 
-			Assert.Throws<AggregateException>(() => {
-				client.Get(null);
+			Assert.ThrowsAsync<AggregateException>(async () => {
+				await client.Get(null);
 			});
 		}
 
 		[Theory]
 		[InlineData("http://nikvel.ru")]
 		[InlineData("https://github.com")]
-		public void GetTest(string url)
+		public async void GetTest(string url)
 		{
 			InterfaceHttpGet client = new WebIndexPage(url);
 
-			string responseBody = client.Get(null);
+			string responseBody = await client.Get(null);
 
 			Assert.True(responseBody.Length > 0);
 		}

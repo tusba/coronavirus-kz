@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Tusba.Components.Http
 {
@@ -29,11 +30,11 @@ namespace Tusba.Components.Http
 		/**
 		 * @throws Exception
 		 */
-		public string Get(string? postId)
+		public async Task<string> Get(string? postId)
 		{
 			string url = baseUrl + (postId is null ? "" : $"/{postId}");
 
-			return Client.GetStringAsync(url).Result;
+			return await Client.GetStringAsync(url);
 		}
 	}
 }
