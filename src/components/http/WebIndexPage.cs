@@ -31,7 +31,7 @@ namespace Tusba.Components.Http
 		 */
 		public string Get(string? postId)
 		{
-			string url = baseUrl + (postId is null ? "" : "/" + postId);
+			string url = baseUrl + (postId is null ? "" : $"/{postId}");
 
 			return Client.GetStringAsync(url).Result;
 		}

@@ -1,8 +1,6 @@
-using System;
-
 namespace Tusba.Components.Http
 {
-	public interface InterfaceHttpGet : IDisposable
+	public interface InterfaceHttpGet : InterfaceHttpRequest
 	{
 		string Get(string? url);
 	}

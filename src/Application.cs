@@ -23,7 +23,7 @@ namespace CoronavirusKz
 			startFromPostId = postId;
 
 			PersistentLogger.Log(new String('-', 66));
-			PersistentLogger.Log("Started" + (startFromPostId is null ? "" : " from post ID=" + startFromPostId));
+			PersistentLogger.Log("Started" + (startFromPostId is null ? "" : $" from post ID={startFromPostId}"));
 		}
 
 		static Application()
@@ -47,7 +47,7 @@ namespace CoronavirusKz
 		private void Run()
 		{
 			string responseBody = FetchIndexPage();
-			PersistentLogger.Log("Got " + responseBody.Length + " bytes");
+			PersistentLogger.Log($"Got {responseBody.Length} bytes");
 		}
 
 		/**
@@ -77,7 +77,7 @@ namespace CoronavirusKz
 
 			string finishedAt = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
 			PersistentLogger.Log("Finished");
-			PersistentLogger.Log("Time elapsed (ms): " + (int) DateTime.Now.Subtract(app.startedAt).TotalMilliseconds);
+			PersistentLogger.Log($"Time elapsed (ms): {(int) DateTime.Now.Subtract(app.startedAt).TotalMilliseconds}");
 		}
 
 		private static void HandleException(object sender, UnhandledExceptionEventArgs args)
@@ -85,9 +85,9 @@ namespace CoronavirusKz
 			Exception e = (Exception) args.ExceptionObject;
 			Exception? innerException = e.InnerException;
 
-			string message = e.Message + (innerException is null ? "" : ": " + innerException.Message);
-			InteractiveLogger.Log("Error: " + message);
-			PersistentLogger.Log("ERROR:\t" + message);
+			string message = e.Message + (innerException is null ? "" : $": {innerException.Message}");
+			InteractiveLogger.Log($"Error: {message}");
+			PersistentLogger.Log($"ERROR:\t{message}");
 			ErrorLogger.Log(e + Environment.NewLine);
 
 			Environment.Exit(0);
