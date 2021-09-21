@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace Tusba.Components.Logging
 {
 	public interface InterfaceLogger
 	{
-		void Log(object target);
+		Task Log(object target);
 	}
 }

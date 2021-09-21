@@ -19,14 +19,6 @@ namespace CoronavirusKz
 		private readonly string? startFromPostId;
 		private readonly DateTime startedAt = DateTime.Now;
 
-		private Application(string? postId)
-		{
-			startFromPostId = postId;
-
-			PersistentLogger.Log(new String('-', 66));
-			PersistentLogger.Log("Started" + (startFromPostId is null ? "" : $" from post ID={startFromPostId}"));
-		}
-
 		static Application()
 		{
 			FileLogger appFileLogger = new FileLogger(Configuration.Get("app.log.file"));
@@ -42,13 +34,30 @@ namespace CoronavirusKz
 			ErrorLogger = new DateTimeLogDecorator(errorFileLogger);
 		}
 
+		private Application(string? postId)
+		{
+			startFromPostId = postId;
+		}
+
+		private static async Task<Application> ApplicationBuilder(string? postId)
+		{
+			Application app = new Application(postId);
+
+			await PersistentLogger.Log(new String('-', 66));
+			await PersistentLogger.Log(
+				"Started" + (app.startFromPostId is null ? "" : $" from post ID={app.startFromPostId}")
+			);
+
+			return app;
+		}
+
 		/**
 		 * @throws ApplicationRuntimeException
 		 */
 		private async Task Run()
 		{
 			string responseBody = await FetchIndexPage();
-			PersistentLogger.Log($"Got {responseBody.Length} bytes");
+			await PersistentLogger.Log($"Got {responseBody.Length} bytes");
 		}
 
 		/**
@@ -73,23 +82,23 @@ namespace CoronavirusKz
 		{
 			AppDomain.CurrentDomain.UnhandledException += HandleException;
 
-			Application app = new Application(args.Length > 0 ? args[0] : null);
+			Application app = await ApplicationBuilder(args.Length > 0 ? args[0] : null);
 			await app.Run();
 
 			string finishedAt = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
-			PersistentLogger.Log("Finished");
-			PersistentLogger.Log($"Time elapsed (ms): {(int) DateTime.Now.Subtract(app.startedAt).TotalMilliseconds}");
+			await PersistentLogger.Log("Finished");
+			await PersistentLogger.Log($"Time elapsed (ms): {(int) DateTime.Now.Subtract(app.startedAt).TotalMilliseconds}");
 		}
 
-		private static void HandleException(object sender, UnhandledExceptionEventArgs args)
+		private static async void HandleException(object sender, UnhandledExceptionEventArgs args)
 		{
 			Exception e = (Exception) args.ExceptionObject;
 			Exception? innerException = e.InnerException;
 
 			string message = e.Message + (innerException is null ? "" : $": {innerException.Message}");
-			InteractiveLogger.Log($"Error: {message}");
-			PersistentLogger.Log($"ERROR:\t{message}");
-			ErrorLogger.Log(e + Environment.NewLine);
+			await InteractiveLogger.Log($"Error: {message}");
+			await PersistentLogger.Log($"ERROR:\t{message}");
+			await ErrorLogger.Log(e + Environment.NewLine);
 
 			Environment.Exit(0);
 		}

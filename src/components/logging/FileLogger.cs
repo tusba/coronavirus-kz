@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Tusba.Components.Logging
 {
@@ -36,17 +37,17 @@ namespace Tusba.Components.Logging
 		/**
 		 * @throws IOException
 		 */
-		public void Log(object target)
+		public async Task Log(object target)
 		{
 			string logText = target.ToString() + Environment.NewLine;
 
 			if (File.Exists(fullFileName))
 			{
-				File.AppendAllText(fullFileName, logText);
+				await File.AppendAllTextAsync(fullFileName, logText);
 			}
 			else
 			{
-				File.WriteAllText(fullFileName, logText);
+				await File.WriteAllTextAsync(fullFileName, logText);
 			}
 		}
 

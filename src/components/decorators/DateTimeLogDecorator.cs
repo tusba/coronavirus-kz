@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Tusba.Components.Logging;
 
 namespace Tusba.Components.Decorators
@@ -11,12 +12,12 @@ namespace Tusba.Components.Decorators
 
 		public DateTimeLogDecorator(InterfaceLogger logger) => this.logger = logger;
 
-		public void Log(object target)
+		public async Task Log(object target)
 		{
 			string value = logTemplate.Replace("%LOG%", target.ToString());
 			value = value.Replace("%DT%", DateTime.Now.ToString(dateTimeFormat));
 
-			logger.Log(value);
+			await logger.Log(value);
 		}
 	}
 }

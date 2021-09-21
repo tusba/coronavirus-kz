@@ -17,17 +17,17 @@ namespace test
 
 			AssertDirectoryNotExist(logDir, out logPath);
 
-			Assert.Throws<DirectoryNotFoundException>(() => {
+			Assert.ThrowsAsync<DirectoryNotFoundException>(async () => {
 				InterfaceLogger logger = new FileLogger(@"test-1.log");
 				((FileLogger) logger).Directory = logDir;
-				logger.Log("Some test data");
+				await logger.Log("Some test data");
 			});
 
 			Assert.False(Directory.Exists(logPath));
 		}
 
 		[Fact]
-		public void LogTest()
+		public async void LogTest()
 		{
 			string logDir = @"log-test", logPath, fileName = @"test-1.log";
 
@@ -44,15 +44,15 @@ namespace test
 			DirectoryInfo dirInfo = Directory.CreateDirectory(logPath);
 			InterfaceLogger logger = new FileLogger(fileName);
 			((FileLogger) logger).Directory = logDir;
-			logger.Log(content[0]);
+			await logger.Log(content[0]);
 
 			Assert.True(File.Exists(filePath));
 
 			fileContent = File.ReadAllText(filePath);
 			Assert.Equal(content[0] + eol, fileContent);
 
-			logger.Log(content[1]);
-			logger.Log(content[2]);
+			await logger.Log(content[1]);
+			await logger.Log(content[2]);
 			fileContent = File.ReadAllText(filePath);
 			Assert.Equal(String.Join(eol, content) + eol, fileContent);
 

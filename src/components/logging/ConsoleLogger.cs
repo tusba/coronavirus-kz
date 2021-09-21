@@ -1,12 +1,13 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Tusba.Components.Logging
 {
 	public class ConsoleLogger : InterfaceLogger
 	{
-		public void Log(object target)
+		public async Task Log(object target)
 		{
-			Console.WriteLine(target);
+			await Task.Run(() => Console.WriteLine(target));
 		}
 	}
 }
