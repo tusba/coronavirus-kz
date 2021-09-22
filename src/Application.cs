@@ -11,8 +11,8 @@ namespace CoronavirusKz
 {
 	public class Application
 	{
-		private static readonly InterfaceConfigurationReader Configuration = new SystemConfiguration();
-		private static readonly InterfaceLogger InteractiveLogger = new ConsoleLogger();
+		private static readonly InterfaceConfigurationReader Configuration = SystemConfiguration.Instance;
+		private static readonly InterfaceLogger InteractiveLogger = ConsoleLogger.Instance;
 		private static readonly InterfaceLogger PersistentLogger;
 		private static readonly InterfaceLogger ErrorLogger;
 
