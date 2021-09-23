@@ -1,37 +1,15 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Tusba.Components.FileSystem;
 
 namespace Tusba.Components.Logging
 {
-	public class FileLogger : InterfaceLogger
+	public class FileLogger : FileStorage, InterfaceLogger
 	{
-		// project's root directory
-		protected readonly string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../..");
-		// relative path from this.baseDir
-		protected string dirPath = "";
-		protected string fileName;
-
-		private string fullDirName = "";
-		private string fullFileName = "";
-
 		public FileLogger(string fileName)
 		{
-			this.fileName = fileName;
-			updateFilePath();
-		}
-
-		public string BaseDirectory => baseDir;
-
-		public string Directory
-		{
-			get => fullDirName;
-
-			set
-			{
-				dirPath = value;
-				updateFilePath();
-			}
+			FileName = fileName;
 		}
 
 		/**
@@ -41,20 +19,14 @@ namespace Tusba.Components.Logging
 		{
 			string logText = target.ToString() + Environment.NewLine;
 
-			if (File.Exists(fullFileName))
+			if (File.Exists(FileName))
 			{
-				await File.AppendAllTextAsync(fullFileName, logText);
+				await File.AppendAllTextAsync(FileName, logText);
 			}
 			else
 			{
-				await File.WriteAllTextAsync(fullFileName, logText);
+				await File.WriteAllTextAsync(FileName, logText);
 			}
-		}
-
-		private void updateFilePath()
-		{
-			fullDirName = Path.Combine(baseDir, dirPath);
-			fullFileName = Path.Combine(fullDirName, fileName);
 		}
 	}
 }
