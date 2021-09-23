@@ -1,8 +1,9 @@
+using System.Threading.Tasks;
+
 namespace Tusba.Components.Repositories
 {
 	public interface InterfacePostWriteRepository
 	{
-		bool Store();
-		bool Store(string postId);
+		Task<bool> Store(string content);
 	}
 }
