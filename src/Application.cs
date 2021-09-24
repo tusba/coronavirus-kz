@@ -1,9 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using Tusba.Components.Configuration;
 using Tusba.Components.Decorators;
 using Tusba.Components.Exceptions;
+using Tusba.Components.FileSystem;
 using Tusba.Components.Http;
 using Tusba.Components.Logging;
 
@@ -19,17 +19,11 @@ namespace CoronavirusKz
 		private readonly string? startFromPostId;
 		private readonly DateTime startedAt = DateTime.Now;
 
+		/** Constructors & initializers */
+
 		static Application()
 		{
-			FileLogger appFileLogger = new FileLogger(Configuration.Get("app.log.file"));
-			FileLogger errorFileLogger = new FileLogger(Configuration.Get("error.log.file"));
-			errorFileLogger.Directory = appFileLogger.Directory = Configuration.Get("app.log.directory");
-
-			if (!Directory.Exists(appFileLogger.Directory))
-			{
-				Directory.CreateDirectory(appFileLogger.Directory);
-			}
-
+			(InterfaceLogger appFileLogger, InterfaceLogger errorFileLogger) = InitializeLoggers();
 			PersistentLogger = new DateTimeLogDecorator(appFileLogger);
 			ErrorLogger = new DateTimeLogDecorator(errorFileLogger);
 		}
@@ -50,6 +44,25 @@ namespace CoronavirusKz
 
 			return app;
 		}
+
+		/**
+		 * @throws ApplicationRuntimeException
+		 */
+		private static (InterfaceLogger app, InterfaceLogger error) InitializeLoggers()
+		{
+			FileLogger appFileLogger = new FileLogger(Configuration.Get("app.log.file"));
+			FileLogger errorFileLogger = new FileLogger(Configuration.Get("error.log.file"));
+			errorFileLogger.Directory = appFileLogger.Directory = Configuration.Get("app.log.directory");
+
+			if (!FileStorage.ProvideDirectory(appFileLogger.Directory))
+			{
+				throw new ApplicationRuntimeException(@$"cannot create directory for log: {appFileLogger.Directory}");
+			}
+
+			return (appFileLogger, errorFileLogger);
+		}
+
+		/** Utility methods */
 
 		/**
 		 * @throws ApplicationRuntimeException
@@ -77,6 +90,8 @@ namespace CoronavirusKz
 				}
 			}
 		}
+
+		/** Main methods */
 
 		public static async Task Main(string[] args)
 		{

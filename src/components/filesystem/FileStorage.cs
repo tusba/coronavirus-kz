@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using IoDirectory = System.IO.Directory;
 
 namespace Tusba.Components.FileSystem
 {
@@ -43,6 +44,18 @@ namespace Tusba.Components.FileSystem
 		{
 			fullDirName = Path.Combine(baseDir, dirPath);
 			fullFileName = Path.Combine(fullDirName, fileName);
+		}
+
+		private class FileStorageProvider : FileStorage
+		{
+		}
+
+		public static bool ProvideDirectory(string dirName)
+		{
+			FileStorage fs = new FileStorageProvider();
+			fs.Directory = dirName;
+
+			return IoDirectory.Exists(fs.Directory) || IoDirectory.CreateDirectory(fs.Directory).Exists;
 		}
 	}
 }
