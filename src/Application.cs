@@ -6,6 +6,7 @@ using Tusba.Components.Exceptions;
 using Tusba.Components.FileSystem;
 using Tusba.Components.Http;
 using Tusba.Components.Logging;
+using Tusba.Components.Repositories;
 
 namespace CoronavirusKz
 {
@@ -19,13 +20,18 @@ namespace CoronavirusKz
 		private readonly string? startFromPostId;
 		private readonly DateTime startedAt = DateTime.Now;
 
-		/** Constructors & initializers */
+		/** Constructors & Initializers */
 
+		/**
+		 * @throws ApplicationRuntimeException
+		 */
 		static Application()
 		{
 			(InterfaceLogger appFileLogger, InterfaceLogger errorFileLogger) = InitializeLoggers();
 			PersistentLogger = new DateTimeLogDecorator(appFileLogger);
 			ErrorLogger = new DateTimeLogDecorator(errorFileLogger);
+
+			InitializeDataDirectory();
 		}
 
 		private Application(string? postId)
@@ -62,6 +68,18 @@ namespace CoronavirusKz
 			return (appFileLogger, errorFileLogger);
 		}
 
+		/**
+		 * @throws ApplicationRuntimeException
+		 */
+		private static void InitializeDataDirectory()
+		{
+			string dataDir = Configuration.Get("app.data.directory");
+			if (!FileStorage.ProvideDirectory(dataDir))
+			{
+				throw new ApplicationRuntimeException(@$"cannot create directory for data: {dataDir}");
+			}
+		}
+
 		/** Utility methods */
 
 		/**
@@ -69,8 +87,20 @@ namespace CoronavirusKz
 		 */
 		private async Task Run()
 		{
+			await ActionFetch();
+		}
+
+		/**
+		 * @throws ApplicationRuntimeException
+		 */
+		private async Task ActionFetch()
+		{
 			string responseBody = await FetchIndexPage();
 			await PersistentLogger.Log($"Got {responseBody.Length} bytes");
+
+			if (!(await new PostRepository(startFromPostId).Store(responseBody))) {
+				throw new ApplicationRuntimeException("cannot store obtained post page");
+			}
 		}
 
 		/**
