@@ -98,9 +98,12 @@ namespace CoronavirusKz
 			string responseBody = await FetchIndexPage();
 			await PersistentLogger.Log($"Got {responseBody.Length} bytes");
 
-			if (!(await new PostRepository(startFromPostId).Store(responseBody))) {
+			var postRepo = new PostRepository(startFromPostId);
+			postRepo.Directory = Configuration.Get("app.data.directory");
+			if (!(await postRepo.Store(responseBody))) {
 				throw new ApplicationRuntimeException("cannot store obtained post page");
 			}
+			await PersistentLogger.Log($"Stored as {postRepo.FileName}");
 		}
 
 		/**
