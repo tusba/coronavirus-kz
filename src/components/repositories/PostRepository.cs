@@ -16,7 +16,7 @@ namespace Tusba.Components.Repositories
 
 		public async Task<string> Fetch()
 		{
-			return await Task.Run(() => "TODO fetch post" + (postId is null ? "" : $"#{postId}"));
+			return await File.ReadAllTextAsync(FileName);
 		}
 
 		public async Task<bool> Store(string content)
