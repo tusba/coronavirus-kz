@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 using Tusba.Components.Configuration;
 using Tusba.Components.Decorators;
 using Tusba.Components.Exceptions;
@@ -7,6 +8,9 @@ using Tusba.Components.FileSystem;
 using Tusba.Components.Http;
 using Tusba.Components.Logging;
 using Tusba.Components.Repositories;
+
+using Tusba.Enumerations.Application;
+using ApplicationAction = Tusba.Enumerations.Application.Action;
 
 namespace CoronavirusKz
 {
@@ -18,6 +22,7 @@ namespace CoronavirusKz
 		private static readonly InterfaceLogger ErrorLogger;
 
 		private readonly string? startFromPostId;
+		private readonly ApplicationAction? action;
 		private readonly DateTime startedAt = DateTime.Now;
 
 		/** Constructors & Initializers */
@@ -34,14 +39,19 @@ namespace CoronavirusKz
 			InitializeDataDirectory();
 		}
 
-		private Application(string? postId)
+		private Application(string? postId, string? action)
 		{
 			startFromPostId = postId;
+
+			if (action is not null)
+			{
+				this.action = action.Resolve();
+			}
 		}
 
-		private static async Task<Application> ApplicationBuilder(string? postId)
+		private static async Task<Application> ApplicationBuilder(string? postId, string? action)
 		{
-			Application app = new Application(postId);
+			Application app = new Application(postId, action);
 
 			await PersistentLogger.Log(new String('-', 66));
 			await PersistentLogger.Log(
@@ -87,7 +97,17 @@ namespace CoronavirusKz
 		 */
 		private async Task Run()
 		{
-			await ActionFetch();
+			switch (action)
+			{
+				case ApplicationAction.FETCH_PAGE:
+					await ActionFetch();
+					return;
+
+				default:
+					await ActionFetch();
+					// todo other actions
+					return;
+			}
 		}
 
 		/**
@@ -124,13 +144,31 @@ namespace CoronavirusKz
 			}
 		}
 
+		private static (string?, string?) resolveArgs(string[] args)
+		{
+			switch (args.Length)
+			{
+				case 0:
+					return (null, null);
+
+				case 1:
+					return (args[0], null);
+
+				default:
+					return int.TryParse(args[1], out int postId)
+						? (args[1], args[0])
+						: (args[0], args[1]);
+			}
+		}
+
 		/** Main methods */
 
 		public static async Task Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += HandleException;
 
-			Application app = await ApplicationBuilder(args.Length > 0 ? args[0] : null);
+			var (postId, appAction) = resolveArgs(args);
+			Application app = await ApplicationBuilder(postId, appAction);
 			await app.Run();
 
 			string finishedAt = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");

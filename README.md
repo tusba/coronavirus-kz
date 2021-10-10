@@ -12,3 +12,17 @@ dotnet build
 cd src/
 dotnet run
 '''
+
+### Run from post ID
+'''
+dotnet run -- 5251
+'''
+
+### Run action from post ID
+'''
+dotnet run -- 5251 fetch
+'''
+or
+'''
+dotnet run -- fetch 5251
+'''
