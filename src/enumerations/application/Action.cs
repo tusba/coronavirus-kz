@@ -6,7 +6,13 @@ namespace Tusba.Enumerations.Application
     NONE,
 
     // fetch and store post HTML page
-    FETCH_PAGE
+    FETCH_PAGE,
+
+    // parse post HTML page,
+    // get content of all posts,
+    // filter out inappropriate posts,
+    // store appropriate ones
+    EXTRACT_POSTS
   }
 
   public static class ActionExtensions
@@ -14,6 +20,7 @@ namespace Tusba.Enumerations.Application
     public static Action Resolve(this string s) => s.ToLower() switch
     {
       "fetch" => Action.FETCH_PAGE,
+      "extract" => Action.EXTRACT_POSTS,
       _ => Action.NONE,
     };
   }

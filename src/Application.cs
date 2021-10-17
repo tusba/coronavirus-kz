@@ -102,10 +102,12 @@ namespace CoronavirusKz
 				case ApplicationAction.FETCH_PAGE:
 					await ActionFetch();
 					return;
-
+				case ApplicationAction.EXTRACT_POSTS:
+					await ActionExtract();
+					return;
 				default:
 					await ActionFetch();
-					// todo other actions
+					await ActionExtract();
 					return;
 			}
 		}
@@ -126,6 +128,11 @@ namespace CoronavirusKz
 			await PersistentLogger.Log($"Stored as {postRepo.FileName}");
 		}
 
+		private async Task ActionExtract()
+		{
+			await InteractiveLogger.Log("TODO extract");
+		}
+
 		/**
 		 * @throws ApplicationRuntimeException
 		 */
@@ -144,18 +151,25 @@ namespace CoronavirusKz
 			}
 		}
 
+		/**
+		 * Resolve command line arguments to post ID and/or action to perform
+		 */
 		private static (string?, string?) resolveArgs(string[] args)
 		{
+			int postId;
+
 			switch (args.Length)
 			{
 				case 0:
 					return (null, null);
 
 				case 1:
-					return (args[0], null);
+					return int.TryParse(args[0], out postId)
+						? (args[0], null)
+						: (null, args[0]);
 
 				default:
-					return int.TryParse(args[1], out int postId)
+					return int.TryParse(args[1], out postId)
 						? (args[1], args[0])
 						: (args[0], args[1]);
 			}
