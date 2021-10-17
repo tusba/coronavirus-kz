@@ -42,8 +42,8 @@ namespace Tusba.Components.FileSystem
 
 		protected void UpdateFilePath()
 		{
-			fullDirName = Path.Combine(baseDir, dirPath);
-			fullFileName = Path.Combine(fullDirName, fileName);
+			fullDirName = Path.Combine(baseDir, @dirPath);
+			fullFileName = Path.Combine(fullDirName, @fileName);
 		}
 
 		private class FileStorageProvider : FileStorage
@@ -53,7 +53,7 @@ namespace Tusba.Components.FileSystem
 		public static bool ProvideDirectory(string dirName)
 		{
 			FileStorage fs = new FileStorageProvider();
-			fs.Directory = dirName;
+			fs.Directory = @dirName;
 
 			return IoDirectory.Exists(fs.Directory) || IoDirectory.CreateDirectory(fs.Directory).Exists;
 		}

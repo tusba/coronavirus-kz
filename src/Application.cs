@@ -36,7 +36,7 @@ namespace CoronavirusKz
 			PersistentLogger = new DateTimeLogDecorator(appFileLogger);
 			ErrorLogger = new DateTimeLogDecorator(errorFileLogger);
 
-			InitializeDataDirectory();
+			InitializeDataDirectories();
 		}
 
 		private Application(string? postId, string? action)
@@ -81,12 +81,15 @@ namespace CoronavirusKz
 		/**
 		 * @throws ApplicationRuntimeException
 		 */
-		private static void InitializeDataDirectory()
+		private static void InitializeDataDirectories()
 		{
-			string dataDir = Configuration.Get("app.data.directory");
-			if (!FileStorage.ProvideDirectory(dataDir))
+			foreach (string dirAlias in new string[] { "app.data.directory", "html.data.directory" })
 			{
-				throw new ApplicationRuntimeException(@$"cannot create directory for data: {dataDir}");
+				string dataDir = Configuration.Get(dirAlias);
+				if (!FileStorage.ProvideDirectory(dataDir))
+				{
+					throw new ApplicationRuntimeException(@$"cannot create directory for data: {dataDir}");
+				}
 			}
 		}
 
@@ -121,8 +124,9 @@ namespace CoronavirusKz
 			await PersistentLogger.Log($"Got {responseBody.Length} bytes");
 
 			var postRepo = new PostRepository(startFromPostId);
-			postRepo.Directory = Configuration.Get("app.data.directory");
-			if (!(await postRepo.Store(responseBody))) {
+			postRepo.Directory = Configuration.Get("html.data.directory");
+			if (!(await postRepo.Store(responseBody)))
+			{
 				throw new ApplicationRuntimeException("cannot store obtained post page");
 			}
 			await PersistentLogger.Log($"Stored as {postRepo.FileName}");
