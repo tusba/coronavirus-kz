@@ -4,9 +4,6 @@ namespace Tusba.Patterns.Singleton
 {
   public interface InterfaceSingleton<T> where T : class
   {
-		static T Instance
-		{
-			get;
-		}
+		static T Instance { get; }
   }
 }

@@ -12,6 +12,9 @@ using Tusba.Components.Repositories;
 using Tusba.Enumerations.Application;
 using ApplicationAction = Tusba.Enumerations.Application.Action;
 
+using Tusba.Models.Application;
+using ApplicationState = Tusba.Models.Application.State;
+
 namespace CoronavirusKz
 {
 	public class Application
@@ -24,6 +27,8 @@ namespace CoronavirusKz
 		private readonly string? startFromPostId;
 		private readonly ApplicationAction? action;
 		private readonly DateTime startedAt = DateTime.Now;
+
+		private ApplicationState state = new ApplicationState();
 
 		/** Constructors & Initializers */
 
@@ -120,15 +125,18 @@ namespace CoronavirusKz
 		 */
 		private async Task ActionFetch()
 		{
-			string responseBody = await FetchIndexPage();
+			string responseBody = await FetchPageContent();
 			await PersistentLogger.Log($"Got {responseBody.Length} bytes");
 
 			var postRepo = new PostRepository(startFromPostId);
 			postRepo.Directory = Configuration.Get("html.data.directory");
+
 			if (!(await postRepo.Store(responseBody)))
 			{
-				throw new ApplicationRuntimeException("cannot store obtained post page");
+				throw new ApplicationRuntimeException("cannot store obtained post page content");
 			}
+
+			state.PageContent = responseBody;
 			await PersistentLogger.Log($"Stored as {postRepo.FileName}");
 		}
 
@@ -140,7 +148,7 @@ namespace CoronavirusKz
 		/**
 		 * @throws ApplicationRuntimeException
 		 */
-		private async Task<string> FetchIndexPage()
+		private async Task<string> FetchPageContent()
 		{
 			using (InterfaceHttpGet indexPage = new WebIndexPage(Configuration.Get("vendor.index.url")))
 			{
