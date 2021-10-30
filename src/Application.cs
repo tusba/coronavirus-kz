@@ -30,6 +30,20 @@ namespace CoronavirusKz
 
 		private ApplicationState state = new ApplicationState();
 
+		private PostRepository? postRepo;
+		private PostRepository PostRepo
+		{
+			get
+			{
+				if (postRepo is null) {
+					postRepo = new PostRepository(startFromPostId);
+					postRepo.Directory = Configuration.Get("html.data.directory");
+				}
+
+				return postRepo;
+			}
+		}
+
 		/** Constructors & Initializers */
 
 		/**
@@ -128,21 +142,28 @@ namespace CoronavirusKz
 			string responseBody = await FetchPageContent();
 			await PersistentLogger.Log($"Got {responseBody.Length} bytes");
 
-			var postRepo = new PostRepository(startFromPostId);
-			postRepo.Directory = Configuration.Get("html.data.directory");
-
-			if (!(await postRepo.Store(responseBody)))
+			if (!(await PostRepo.Store(responseBody)))
 			{
 				throw new ApplicationRuntimeException("cannot store obtained post page content");
 			}
 
 			state.PageContent = responseBody;
-			await PersistentLogger.Log($"Stored as {postRepo.FileName}");
+			await PersistentLogger.Log($"Stored as {PostRepo.FileName}");
 		}
 
+		/**
+		 * @throws ApplicationRuntimeException
+		 */
 		private async Task ActionExtract()
 		{
-			await InteractiveLogger.Log("TODO extract");
+			string pageContent;
+			try {
+				pageContent = state.PageContent ?? await PostRepo.Fetch();
+			} catch {
+				throw new ApplicationRuntimeException("cannot fetch obtained post page content");
+			}
+
+			await InteractiveLogger.Log($"TODO extract from [{pageContent.Substring(0, 20)}]");
 		}
 
 		/**
@@ -166,7 +187,7 @@ namespace CoronavirusKz
 		/**
 		 * Resolve command line arguments to post ID and/or action to perform
 		 */
-		private static (string?, string?) resolveArgs(string[] args)
+		private static (string?, string?) ResolveArgs(string[] args)
 		{
 			int postId;
 
@@ -193,7 +214,7 @@ namespace CoronavirusKz
 		{
 			AppDomain.CurrentDomain.UnhandledException += HandleException;
 
-			var (postId, appAction) = resolveArgs(args);
+			var (postId, appAction) = ResolveArgs(args);
 			Application app = await ApplicationBuilder(postId, appAction);
 			await app.Run();
 
