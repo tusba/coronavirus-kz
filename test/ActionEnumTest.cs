@@ -3,7 +3,7 @@ using Tusba.Enumerations.Application;
 
 namespace test
 {
-  public class ActionEnumTest
+  public class ActionEnumTest : BaseTest
   {
     [Theory]
     [InlineData("")]

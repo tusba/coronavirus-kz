@@ -1,15 +1,11 @@
-using System;
 using System.IO;
 using Xunit;
 using Tusba.Components.FileSystem;
 
 namespace test
 {
-	public class FileStorageTest
+	public class FileStorageTest : BaseTest
 	{
-		// project's root directory
-		private readonly string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../..");
-
 		[Fact]
 		public void ProvideNonExistingDirectoryTest()
 		{

@@ -5,11 +5,8 @@ using Tusba.Components.Logging;
 
 namespace test
 {
-	public class FileLoggerTest
+	public class FileLoggerTest : BaseTest
 	{
-		// project's root directory
-		private readonly string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../..");
-
 		[Fact]
 		public void NonExistingDirectoryTest()
 		{
@@ -38,6 +35,7 @@ namespace test
 			string[] content = {
 				"Some test data",
 				"More test data",
+				eol,
 				"Qwerty 123456"
 			};
 
@@ -51,8 +49,10 @@ namespace test
 			fileContent = File.ReadAllText(filePath);
 			Assert.Equal(content[0] + eol, fileContent);
 
-			await logger.Log(content[1]);
-			await logger.Log(content[2]);
+			for (int i = 1; i < content.Length; i++)
+			{
+				await logger.Log(content[i]);
+			}
 			fileContent = File.ReadAllText(filePath);
 			Assert.Equal(String.Join(eol, content) + eol, fileContent);
 

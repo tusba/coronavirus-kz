@@ -4,7 +4,7 @@ using Tusba.Components.Http;
 
 namespace test
 {
-	public class WebIndexPageTest
+	public class WebIndexPageTest : BaseTest
 	{
 		[Theory]
 		[InlineData("about:blank")]

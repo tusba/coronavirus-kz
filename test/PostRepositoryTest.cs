@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Xunit;
 using Tusba.Components.FileSystem;
@@ -6,11 +5,8 @@ using Tusba.Components.Repositories;
 
 namespace test
 {
-	public class PostRepositoryTest
+	public class PostRepositoryTest : BaseTest
 	{
-		// project's root directory
-		private readonly string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../..");
-
 		[Theory]
 		[InlineData(null)]
 		[InlineData("5251")]
