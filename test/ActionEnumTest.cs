@@ -12,7 +12,7 @@ namespace test
     [InlineData("undefined")]
     public void DefaultResolveTest(string action)
     {
-      Assert.Equal(Action.NONE, action.Resolve());
+      Assert.Equal(Action.NONE, action.ResolveApplicationAction());
     }
 
     [Theory]
@@ -21,7 +21,7 @@ namespace test
     [InlineData("FeTcH")]
     public void FetchResolveTest(string action)
     {
-      Assert.Equal(Action.FETCH_PAGE, action.Resolve());
+      Assert.Equal(Action.FETCH_PAGE, action.ResolveApplicationAction());
     }
   }
 }

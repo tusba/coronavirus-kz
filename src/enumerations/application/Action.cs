@@ -17,7 +17,7 @@ namespace Tusba.Enumerations.Application
 
   public static class ActionExtensions
   {
-    public static Action Resolve(this string s) => s.ToLower() switch
+    public static Action ResolveApplicationAction(this string s) => s.ToLower() switch
     {
       "fetch" => Action.FETCH_PAGE,
       "extract" => Action.EXTRACT_POSTS,

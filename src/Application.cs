@@ -7,6 +7,7 @@ using Tusba.Components.Exceptions;
 using Tusba.Components.FileSystem;
 using Tusba.Components.Http;
 using Tusba.Components.Logging;
+using Tusba.Components.Parsers;
 using Tusba.Components.Repositories;
 
 using Tusba.Enumerations.Application;
@@ -64,7 +65,7 @@ namespace CoronavirusKz
 
 			if (action is not null)
 			{
-				this.action = action.Resolve();
+				this.action = action.ResolveApplicationAction();
 			}
 		}
 
@@ -163,7 +164,10 @@ namespace CoronavirusKz
 				throw new ApplicationRuntimeException("cannot fetch obtained post page content");
 			}
 
-			await InteractiveLogger.Log($"TODO extract from [{pageContent.Substring(0, 20)}]");
+			string[] posts = await new PostParser(pageContent).Parse();
+			await PersistentLogger.Log($"Total found {posts.Length} posts after parsing");
+
+			await InteractiveLogger.Log($"TODO filter {posts.Length} posts");
 		}
 
 		/**
