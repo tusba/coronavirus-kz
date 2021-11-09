@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
+using Tusba.Models;
 
 namespace Tusba.Components.Parsers
 {
   public interface InterfacePostParser
   {
-    Task<string[]> Parse();
+    Task<Post[]> Parse();
   }
 }

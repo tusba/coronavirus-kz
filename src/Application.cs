@@ -13,8 +13,8 @@ using Tusba.Components.Repositories;
 using Tusba.Enumerations.Application;
 using ApplicationAction = Tusba.Enumerations.Application.Action;
 
-using Tusba.Models.Application;
 using ApplicationState = Tusba.Models.Application.State;
+using Tusba.Models;
 
 namespace CoronavirusKz
 {
@@ -164,7 +164,7 @@ namespace CoronavirusKz
 				throw new ApplicationRuntimeException("cannot fetch obtained post page content");
 			}
 
-			string[] posts = await new PostParser(pageContent).Parse();
+			Post[] posts = await new PostParser(pageContent).Parse();
 			await PersistentLogger.Log($"Total found {posts.Length} posts after parsing");
 
 			await InteractiveLogger.Log($"TODO filter {posts.Length} posts");
