@@ -1,17 +1,17 @@
 using System.IO;
 using System.Threading.Tasks;
+using Tusba.Components.Configuration;
 
 namespace Tusba.Components.Repositories
 {
 	public class PostRepository : BaseRepository, InterfacePostRepository
 	{
-		private const string DEFAULT_DATA_FILE_NAME = "index.html";
 		private readonly string? postId;
 
 		public PostRepository(string? postId)
 		{
 			this.postId = postId;
-			FileName = this.postId is null ? DEFAULT_DATA_FILE_NAME : $"{this.postId}.html";
+			CustomizeFileName();
 		}
 
 		public async Task<string> Fetch()
@@ -27,6 +27,19 @@ namespace Tusba.Components.Repositories
 			} catch {
 				return false;
 			}
+		}
+
+		public void ResolveFileName(string defaultFileName, string fileExtension)
+		{
+			string fileName = this.postId is null ? defaultFileName : this.postId;
+
+			FileName = $"{fileName}.{fileExtension}";
+		}
+
+		protected void CustomizeFileName()
+		{
+			InterfaceConfigurationReader Configuration = SystemConfiguration.Instance;
+			ResolveFileName(Configuration.Get("post.file.name.default"), Configuration.Get("post.file.extension"));
 		}
 	}
 }
