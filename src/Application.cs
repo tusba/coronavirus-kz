@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Tusba.Components.Configuration;
@@ -12,6 +13,7 @@ using Tusba.Components.Repositories;
 
 using Tusba.Enumerations.Application;
 using ApplicationAction = Tusba.Enumerations.Application.Action;
+using PostType = Tusba.Enumerations.Post.Type;
 
 using ApplicationState = Tusba.Models.Application.State;
 using Tusba.Models;
@@ -167,7 +169,14 @@ namespace CoronavirusKz
 			Post[] posts = await new PostParser(pageContent).Parse();
 			await PersistentLogger.Log($"Total found {posts.Length} posts after parsing");
 
-			await InteractiveLogger.Log($"TODO filter {posts.Length} posts");
+			Post[] statsPosts = posts
+				.Where(
+					post => post.Type == PostType.STATS_DISEASED || post.Type == PostType.STATS_RECOVERED
+				)
+				.ToArray();
+			await PersistentLogger.Log($"Total found {statsPosts.Length} posts containing statistics information");
+
+			await InteractiveLogger.Log($"TODO parse & store stats from {statsPosts.Length} posts");
 		}
 
 		/**
