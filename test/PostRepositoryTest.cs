@@ -24,7 +24,8 @@ namespace test
 			FileStorage.ProvideDirectory(dirName);
 			var repo = new PostRepository(postId);
 			repo.Directory = dirName;
-			repo.ResolveFileName("index", "html");
+			repo.DefaultFileName = "index";
+			repo.FileExtenstion = "html";
 
 			string filePath = repo.FileName;
 			Assert.False(File.Exists(filePath));

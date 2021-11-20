@@ -1,45 +1,30 @@
-using System.IO;
-using System.Threading.Tasks;
 using Tusba.Components.Configuration;
 
 namespace Tusba.Components.Repositories
 {
-	public class PostRepository : BaseRepository, InterfacePostRepository
+	public class PostRepository : BasePostRepository
 	{
-		private readonly string? postId;
+		public override string FileName
+		{
+			get => $"{postId ?? DefaultFileName}.{FileExtenstion}";
+
+			set => base.FileName = value;
+		}
+
+		protected readonly string? postId;
 
 		public PostRepository(string? postId)
 		{
 			this.postId = postId;
-			CustomizeFileName();
+			Configure();
 		}
 
-		public async Task<string> Fetch()
-		{
-			return await File.ReadAllTextAsync(FileName);
-		}
-
-		public async Task<bool> Store(string content)
-		{
-			try {
-				await File.WriteAllTextAsync(FileName, content);
-				return true;
-			} catch {
-				return false;
-			}
-		}
-
-		public void ResolveFileName(string defaultFileName, string fileExtension)
-		{
-			string fileName = this.postId is null ? defaultFileName : this.postId;
-
-			FileName = $"{fileName}.{fileExtension}";
-		}
-
-		protected void CustomizeFileName()
+		protected void Configure()
 		{
 			InterfaceConfigurationReader Configuration = SystemConfiguration.Instance;
-			ResolveFileName(Configuration.Get("post.file.name.default"), Configuration.Get("post.file.extension"));
+
+			DefaultFileName = Configuration.Get("post.file.name.default");
+			FileExtenstion = Configuration.Get("post.file.extension");
 		}
 	}
 }

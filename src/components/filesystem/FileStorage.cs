@@ -29,7 +29,7 @@ namespace Tusba.Components.FileSystem
 			}
 		}
 
-		public string FileName
+		public virtual string FileName
 		{
 			get => fullFileName;
 
