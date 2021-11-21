@@ -1,5 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
+using Tusba.Components.Configuration;
 
 namespace Tusba.Components.Repositories.Post
 {
@@ -8,6 +9,11 @@ namespace Tusba.Components.Repositories.Post
 		public string? DefaultFileName { get; set; }
 
 		public string? FileExtenstion { get; set; }
+
+		protected BasePostRepository()
+		{
+			FileExtenstion = SystemConfiguration.Instance.Get("post.file.extension");
+		}
 
 		public async Task<string> Fetch()
 		{

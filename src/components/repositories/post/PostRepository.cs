@@ -17,18 +17,10 @@ namespace Tusba.Components.Repositories.Post
 
 		protected readonly string? postId;
 
-		public PostRepository(string? postId)
+		public PostRepository(string? postId) : base()
 		{
 			this.postId = postId;
-			Configure();
-		}
-
-		protected void Configure()
-		{
-			InterfaceConfigurationReader Configuration = SystemConfiguration.Instance;
-
-			DefaultFileName = Configuration.Get("post.file.name.default");
-			FileExtenstion = Configuration.Get("post.file.extension");
+			DefaultFileName = SystemConfiguration.Instance.Get("post.file.name.default");
 		}
 	}
 }
