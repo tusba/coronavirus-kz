@@ -1,7 +1,7 @@
 using System.IO;
 using Xunit;
 using Tusba.Components.FileSystem;
-using Tusba.Components.Repositories;
+using Tusba.Components.Repositories.Post;
 
 namespace test
 {

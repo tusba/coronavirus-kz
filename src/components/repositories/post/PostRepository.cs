@@ -1,12 +1,16 @@
 using Tusba.Components.Configuration;
 
-namespace Tusba.Components.Repositories
+namespace Tusba.Components.Repositories.Post
 {
 	public class PostRepository : BasePostRepository
 	{
 		public override string FileName
 		{
-			get => $"{postId ?? DefaultFileName}.{FileExtenstion}";
+			get
+			{
+				base.FileName = $"{postId ?? DefaultFileName}.{FileExtenstion}";
+				return base.FileName;
+			}
 
 			set => base.FileName = value;
 		}

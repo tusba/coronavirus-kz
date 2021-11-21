@@ -9,7 +9,7 @@ using Tusba.Components.FileSystem;
 using Tusba.Components.Http;
 using Tusba.Components.Logging;
 using Tusba.Components.Parsers;
-using Tusba.Components.Repositories;
+using Tusba.Components.Repositories.Post;
 
 using Tusba.Enumerations.Application;
 using ApplicationAction = Tusba.Enumerations.Application.Action;

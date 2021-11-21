@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Tusba.Components.Repositories
+namespace Tusba.Components.Repositories.Post
 {
 	public interface InterfacePostWriteRepository
 	{

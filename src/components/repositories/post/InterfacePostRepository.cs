@@ -1,4 +1,4 @@
-namespace Tusba.Components.Repositories
+namespace Tusba.Components.Repositories.Post
 {
 	public interface InterfacePostRepository : InterfacePostReadRepository, InterfacePostWriteRepository
 	{

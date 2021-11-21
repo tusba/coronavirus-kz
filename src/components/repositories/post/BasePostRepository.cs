@@ -1,7 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Tusba.Components.Repositories
+namespace Tusba.Components.Repositories.Post
 {
 	public abstract class BasePostRepository : BaseRepository, InterfacePostRepository
 	{
