@@ -8,6 +8,7 @@ namespace Tusba.Components.FileSystem
 	{
 		// project's root directory
 		protected readonly string baseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"../../../..");
+
 		// relative path from this.baseDir
 		private string dirPath = "";
 		private string fileName = "";

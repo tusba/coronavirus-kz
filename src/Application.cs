@@ -105,7 +105,14 @@ namespace CoronavirusKz
 		 */
 		private static void InitializeDataDirectories()
 		{
-			foreach (string dirAlias in new string[] { "app.data.directory", "html.data.directory" })
+			string[] dataDirectories = new string[]
+			{
+				"app.data.directory",
+				"html.data.directory",
+				"stats.html.data.directory"
+			};
+
+			foreach (string dirAlias in dataDirectories)
 			{
 				string dataDir = Configuration.Get(dirAlias);
 				if (!FileStorage.ProvideDirectory(dataDir))
