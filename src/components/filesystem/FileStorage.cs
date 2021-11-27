@@ -19,7 +19,7 @@ namespace Tusba.Components.FileSystem
 
 		public string BaseDirectory => baseDir;
 
-		public string Directory
+		public virtual string Directory
 		{
 			get => fullDirName;
 

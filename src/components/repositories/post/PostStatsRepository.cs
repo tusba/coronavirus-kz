@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using PostType = Tusba.Enumerations.Post.Type;
 
 namespace Tusba.Components.Repositories.Post
@@ -8,6 +9,24 @@ namespace Tusba.Components.Repositories.Post
 		public PostType Type { get; set; }
 
 		public string? Date { get; set; }
+
+		public override string Directory
+		{
+			get => base.Directory;
+
+			set
+			{
+				string dirName = @value;
+				string subDirName = @SubDirectory;
+
+				if (!String.IsNullOrEmpty(subDirName))
+				{
+					dirName += @$"{Path.DirectorySeparatorChar}{subDirName}";
+				}
+
+				base.Directory = @dirName;
+			}
+		}
 
 		public override string FileName
 		{
@@ -24,10 +43,18 @@ namespace Tusba.Components.Repositories.Post
 		{
 		}
 
-		public PostStatsRepository(PostType type, string date) : this()
+		public PostStatsRepository(PostType type, string? date = null) : this()
 		{
 			Type = type;
 			Date = date;
 		}
+
+		protected string SubDirectory => Type switch
+		{
+			PostType.STATS_DISEASED => "diseased",
+			PostType.STATS_PNEUMONIA => "pneumonia",
+			PostType.STATS_RECOVERED => "recovered",
+			_ => ""
+		};
 	}
 }
