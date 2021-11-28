@@ -14,14 +14,10 @@ namespace test
 		public async void StoreFetchTest(string? postId)
 		{
 			string dirName = @"repo-test";
-			string dirPath = Path.Combine(baseDir, dirName);
 
-			if (Directory.Exists(dirPath))
-			{
-				CleanUp(dirPath);
-			}
-
+			CleanUp(dirName, true);
 			FileStorage.ProvideDirectory(dirName);
+
 			var repo = new PostRepository(postId);
 			repo.Directory = dirName;
 			repo.DefaultFileName = "index";
@@ -36,12 +32,7 @@ namespace test
 
 			Assert.Equal(content, await repo.Fetch());
 
-			CleanUp(dirPath);
-		}
-
-		private void CleanUp(string directoryPath)
-		{
-			Directory.Delete(directoryPath, true);
+			CleanUp(dirName);
 		}
 	}
 }

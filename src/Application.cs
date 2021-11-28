@@ -167,9 +167,12 @@ namespace CoronavirusKz
 		private async Task ActionExtract()
 		{
 			string pageContent;
-			try {
+			try
+			{
 				pageContent = state.PageContent ?? await PostRepo.Fetch();
-			} catch {
+			}
+			catch
+			{
 				throw new ApplicationRuntimeException("cannot fetch obtained post page content");
 			}
 

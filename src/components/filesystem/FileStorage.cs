@@ -49,14 +49,55 @@ namespace Tusba.Components.FileSystem
 
 		private class FileStorageProvider : FileStorage
 		{
+			private bool Absolute { get; }
+
+			public FileStorageProvider(bool absolutePaths = false) : base()
+			{
+				Absolute = absolutePaths;
+			}
+
+			public override string Directory
+			{
+				get => base.Directory;
+
+				set
+				{
+					if (Absolute)
+					{
+						fullDirName = value;
+					}
+					else
+					{
+						base.Directory = value;
+					}
+				}
+			}
+
+			public override string FileName
+			{
+				get => base.FileName;
+
+				set
+				{
+					if (Absolute)
+					{
+						fullFileName = value;
+					}
+					else
+					{
+						base.FileName = value;
+					}
+				}
+			}
 		}
 
-		public static bool ProvideDirectory(string dirName)
+		public static bool ProvideDirectory(string dirName, bool absolutePath = false)
 		{
-			FileStorage fs = new FileStorageProvider();
+			FileStorage fs = new FileStorageProvider(absolutePath);
 			fs.Directory = @dirName;
+			string dirPath = fs.Directory;
 
-			return IoDirectory.Exists(fs.Directory) || IoDirectory.CreateDirectory(fs.Directory).Exists;
+			return IoDirectory.Exists(dirPath) || IoDirectory.CreateDirectory(dirPath).Exists;
 		}
 	}
 }

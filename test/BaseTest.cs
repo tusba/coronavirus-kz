@@ -15,5 +15,15 @@ namespace test
 		{
 			testDir = Path.Combine(baseDir, @"test");
 		}
+
+		protected void CleanUp(string directoryName, bool onlyIfExists = false)
+		{
+			string directoryPath = Path.Combine(baseDir, directoryName);
+
+			if (!onlyIfExists || Directory.Exists(directoryPath))
+			{
+				Directory.Delete(directoryPath, true);
+			}
+		}
   }
 }

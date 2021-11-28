@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
+using Tusba.Components.FileSystem;
 using PostType = Tusba.Enumerations.Post.Type;
 
 namespace Tusba.Components.Repositories.Post
@@ -13,19 +15,7 @@ namespace Tusba.Components.Repositories.Post
 		public override string Directory
 		{
 			get => base.Directory;
-
-			set
-			{
-				string dirName = @value;
-				string subDirName = @SubDirectory;
-
-				if (!String.IsNullOrEmpty(subDirName))
-				{
-					dirName += @$"{Path.DirectorySeparatorChar}{subDirName}";
-				}
-
-				base.Directory = @dirName;
-			}
+			set => base.Directory = @ResolveDirectory(value);
 		}
 
 		public override string FileName
@@ -49,6 +39,13 @@ namespace Tusba.Components.Repositories.Post
 			Date = date;
 		}
 
+		public override async Task<bool> Store(string content)
+		{
+			FileStorage.ProvideDirectory(Directory, true);
+
+			return await base.Store(content);
+		}
+
 		protected string SubDirectory => Type switch
 		{
 			PostType.STATS_DISEASED => "diseased",
@@ -56,5 +53,18 @@ namespace Tusba.Components.Repositories.Post
 			PostType.STATS_RECOVERED => "recovered",
 			_ => ""
 		};
+
+		private string ResolveDirectory(string directoryValue)
+		{
+			string dirName = @directoryValue;
+			string subDirName = @SubDirectory;
+
+			if (!String.IsNullOrEmpty(subDirName))
+			{
+				dirName += @$"{Path.DirectorySeparatorChar}{subDirName}";
+			}
+
+			return dirName;
+		}
 	}
 }

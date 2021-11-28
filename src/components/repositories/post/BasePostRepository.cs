@@ -20,12 +20,15 @@ namespace Tusba.Components.Repositories.Post
 			return await File.ReadAllTextAsync(FileName);
 		}
 
-		public async Task<bool> Store(string content)
+		public virtual async Task<bool> Store(string content)
 		{
-			try {
+			try
+			{
 				await File.WriteAllTextAsync(FileName, content);
 				return true;
-			} catch {
+			}
+			catch
+			{
 				return false;
 			}
 		}
