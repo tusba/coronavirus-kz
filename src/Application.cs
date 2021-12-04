@@ -10,6 +10,7 @@ using Tusba.Components.Http;
 using Tusba.Components.Logging;
 using Tusba.Components.Parsers;
 using Tusba.Components.Repositories.Post;
+using Tusba.Components.Services.PostStats;
 
 using Tusba.Enumerations.Application;
 using ApplicationAction = Tusba.Enumerations.Application.Action;
@@ -176,9 +177,11 @@ namespace CoronavirusKz
 				throw new ApplicationRuntimeException("cannot fetch obtained post page content");
 			}
 
+			// parse post models from raw page content
 			Post[] posts = await new PostParser(pageContent).Parse();
 			await PersistentLogger.Log($"Total found {posts.Length} posts after parsing");
 
+			// filter post models for saving
 			Post[] statsPosts = posts
 				.Where(
 					post => post.Type == PostType.STATS_DISEASED || post.Type == PostType.STATS_RECOVERED
@@ -186,7 +189,16 @@ namespace CoronavirusKz
 				.ToArray();
 			await PersistentLogger.Log($"Total found {statsPosts.Length} posts containing statistics information");
 
-			await InteractiveLogger.Log($"TODO parse & store stats from {statsPosts.Length} posts");
+			// save filtered post models' raw content
+			var persistService = new PostStatsPersistService();
+			persistService.Directory = Configuration.Get("stats.html.data.directory");
+			persistService.Posts = statsPosts;
+
+			if (!(await persistService.Store()))
+			{
+				throw new ApplicationRuntimeException("failed to store statistics from posts");
+			}
+			await PersistentLogger.Log($"Statistics stored in {persistService.Directory}");
 		}
 
 		/**
