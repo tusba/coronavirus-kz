@@ -8,10 +8,11 @@ namespace test
 	public class PostRepositoryTest : BaseTest
 	{
 		[Theory]
-		[InlineData(null)]
-		[InlineData("5251")]
-		[InlineData("4140")]
-		public async void StoreFetchTest(string? postId)
+		[InlineData(null, false)]
+		[InlineData("6362", true)]
+		[InlineData("5251", false)]
+		[InlineData("4140", true)]
+		public async void StoreFetchTest(string? postId, bool overwrite)
 		{
 			string dirName = @"repo-test";
 
@@ -19,9 +20,11 @@ namespace test
 			FileStorage.ProvideDirectory(dirName);
 
 			var repo = new PostRepository(postId);
+			Assert.True(repo.Overwrite);
 			repo.Directory = dirName;
 			repo.DefaultFileName = "index";
 			repo.FileExtenstion = "html";
+			repo.Overwrite = overwrite;
 
 			string filePath = repo.FileName;
 			Assert.False(File.Exists(filePath));
@@ -33,6 +36,11 @@ namespace test
 			Assert.True(await repo.Exist());
 
 			Assert.Equal(content, await repo.Fetch());
+
+			// test overwriting
+			string newContent = "Overwritten";
+			Assert.True(await repo.Store(newContent));
+			Assert.Equal(repo.Overwrite ? newContent : content, await repo.Fetch());
 
 			CleanUp(dirName);
 		}

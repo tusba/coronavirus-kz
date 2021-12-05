@@ -8,11 +8,16 @@ namespace Tusba.Components.Repositories.Post
 	{
 		public string? DefaultFileName { get; set; }
 
-		public string? FileExtenstion { get; set; }
+		public string FileExtenstion { get; set; }
+
+		public bool Overwrite { get; set; }
 
 		protected BasePostRepository()
 		{
-			FileExtenstion = SystemConfiguration.Instance.Get("post.file.extension");
+			var configuration = SystemConfiguration.Instance;
+
+			FileExtenstion = configuration.Get("post.file.extension");
+			Overwrite = ResolveOverwrite(configuration.Get("post.file.overwrite"));
 		}
 
 		public async Task<string> Fetch()
@@ -22,6 +27,11 @@ namespace Tusba.Components.Repositories.Post
 
 		public virtual async Task<bool> Store(string content)
 		{
+			if (!Overwrite && await Exist())
+			{
+				return true;
+			}
+
 			try
 			{
 				await File.WriteAllTextAsync(FileName, content);
@@ -37,5 +47,11 @@ namespace Tusba.Components.Repositories.Post
 		{
 			return await Task.Run(() => File.Exists(FileName));
 		}
+
+		protected bool ResolveOverwrite(string value) => value.ToLower() switch
+		{
+			"false" or "0" or "no" => false,
+			_ => true
+		};
 	}
 }
