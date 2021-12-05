@@ -68,8 +68,10 @@ namespace test
 			repo.Directory = dirName;
 			repo.FileExtenstion = "html";
 
+			Assert.False(await repo.Exist());
 			Assert.True(await repo.Store(content));
 			Assert.Equal(content, await repo.Fetch());
+			Assert.True(await repo.Exist());
 
 			CleanUp(dirName);
 		}

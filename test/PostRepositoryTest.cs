@@ -25,10 +25,12 @@ namespace test
 
 			string filePath = repo.FileName;
 			Assert.False(File.Exists(filePath));
+			Assert.False(await repo.Exist());
 
 			string content = $"Post ID is {(postId is null ? "null" : postId)}";
 			Assert.True(await repo.Store(content));
 			Assert.True(File.Exists(filePath));
+			Assert.True(await repo.Exist());
 
 			Assert.Equal(content, await repo.Fetch());
 

@@ -32,5 +32,10 @@ namespace Tusba.Components.Repositories.Post
 				return false;
 			}
 		}
+
+		public async Task<bool> Exist()
+		{
+			return await Task.Run(() => File.Exists(FileName));
+		}
 	}
 }
