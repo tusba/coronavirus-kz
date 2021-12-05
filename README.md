@@ -47,10 +47,23 @@ or
 dotnet run -- extract 5251
 ```
 
+### Run parse for specific date
+
+```
+dotnet run -- parse 2021-12-05
+```
+
+### Run parse for specific period
+
+```
+dotnet run -- parse 2021-12-01 2021-12-05
+```
+
 ### List of supported actions:
 
 - `fetch [postId]` - fetch and store post HTML page
 - `extract [postId]` - parse post HTML page, get content of all posts, filter out posts by type of their content, store appropriate posts as HTML
+- `parse date [boundaryDate]` - parse HTML data from post statistics into a structured format
 
 ## Tests
 

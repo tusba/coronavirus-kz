@@ -138,6 +138,9 @@ namespace CoronavirusKz
 				case ApplicationAction.EXTRACT_POSTS:
 					await ActionExtract();
 					return;
+				case ApplicationAction.PARSE_STATS:
+					await ActionParse();
+					return;
 				default:
 					await ActionFetch();
 					await ActionExtract();
@@ -199,6 +202,14 @@ namespace CoronavirusKz
 				throw new ApplicationRuntimeException("failed to store statistics from posts");
 			}
 			await PersistentLogger.Log($"Statistics stored in {persistService.Directory}");
+		}
+
+		/**
+		 * @throws ApplicationRuntimeException
+		 */
+		private async Task ActionParse()
+		{
+			await InteractiveLogger.Log("TODO parse html into xml/json");
 		}
 
 		/**
