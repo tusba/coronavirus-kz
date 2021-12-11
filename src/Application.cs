@@ -17,6 +17,7 @@ using ApplicationAction = Tusba.Enumerations.Application.Action;
 using PostType = Tusba.Enumerations.Post.Type;
 
 using ApplicationState = Tusba.Models.Application.State;
+using ApplicationOptions = Tusba.Models.Application.Options;
 using Tusba.Models;
 
 namespace CoronavirusKz
@@ -30,6 +31,7 @@ namespace CoronavirusKz
 
 		private readonly string? startFromPostId;
 		private readonly ApplicationAction? action;
+		private readonly ApplicationOptions options;
 		private readonly DateTime startedAt = DateTime.Now;
 
 		private ApplicationState state = new ApplicationState();
@@ -62,19 +64,16 @@ namespace CoronavirusKz
 			InitializeDataDirectories();
 		}
 
-		private Application(string? postId, string? action)
+		private Application(ApplicationOptions options)
 		{
-			startFromPostId = postId;
-
-			if (action is not null)
-			{
-				this.action = action.ResolveApplicationAction();
-			}
+			startFromPostId = options.PostId;
+			action = options.Action?.ResolveApplicationAction();
+			this.options = options;
 		}
 
-		private static async Task<Application> ApplicationBuilder(string? postId, string? action)
+		private static async Task<Application> ApplicationBuilder(ApplicationOptions options)
 		{
-			Application app = new Application(postId, action);
+			Application app = new Application(options);
 
 			await PersistentLogger.Log(new String('-', 66));
 			await PersistentLogger.Log(
@@ -209,7 +208,9 @@ namespace CoronavirusKz
 		 */
 		private async Task ActionParse()
 		{
-			await InteractiveLogger.Log("TODO parse html into xml/json");
+			string s1 = options.Date?.ToString("yyyy-MM-dd") ?? "null";
+			string s2 = options.BoundaryDate?.ToString("yyyy-MM-dd") ?? "null";
+			await InteractiveLogger.Log($"TODO parse html into xml/json: {s1}, {s2}");
 		}
 
 		/**
@@ -230,28 +231,47 @@ namespace CoronavirusKz
 			}
 		}
 
-		/**
-		 * Resolve command line arguments to post ID and/or action to perform
-		 */
-		private static (string?, string?) ResolveArgs(string[] args)
+		private static ApplicationOptions ResolveArgs(string[] args)
 		{
+			var options = new ApplicationOptions();
+			int argCount = args.Length;
 			int postId;
 
-			switch (args.Length)
+			switch (argCount)
 			{
 				case 0:
-					return (null, null);
+					return options;
 
 				case 1:
-					return int.TryParse(args[0], out postId)
-						? (args[0], null)
-						: (null, args[0]);
+					if (int.TryParse(args[0], out postId))
+					{
+						options.PostId = args[0];
+					}
+					else
+					{
+						options.Action = args[0];
+					}
 
-				default:
-					return int.TryParse(args[1], out postId)
-						? (args[1], args[0])
-						: (args[0], args[1]);
+					return options;
 			}
+
+			if (argCount is >= 2 and <=3 && args[0].ResolveApplicationAction() == ApplicationAction.PARSE_STATS)
+			{
+				options.Action = args[0];
+				options.setDate(args[1]);
+				if (argCount == 3)
+				{
+					options.setDate(args[2], true);
+				}
+
+				return options;
+			}
+
+			(options.PostId, options.Action) = int.TryParse(args[0], out postId)
+				? (args[0], args[1])
+				: (args[1], args[0]);
+
+			return options;
 		}
 
 		/** Main methods */
@@ -260,8 +280,8 @@ namespace CoronavirusKz
 		{
 			AppDomain.CurrentDomain.UnhandledException += HandleException;
 
-			var (postId, appAction) = ResolveArgs(args);
-			Application app = await ApplicationBuilder(postId, appAction);
+			var appOptions = ResolveArgs(args);
+			Application app = await ApplicationBuilder(appOptions);
 			await app.Run();
 
 			string finishedAt = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
