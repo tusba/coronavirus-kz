@@ -193,8 +193,7 @@ namespace CoronavirusKz
 
 			// save filtered post models' raw content
 			var persistService = new PostStatsPersistService();
-			persistService.Directory = Configuration.Get("stats.html.data.directory");
-			persistService.Posts = statsPosts;
+			persistService.SetPosts(statsPosts).Directory = Configuration.Get("stats.html.data.directory");
 
 			if (!(await persistService.Store()))
 			{

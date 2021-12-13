@@ -5,18 +5,16 @@ using Tusba.Models;
 
 namespace Tusba.Components.Services.PostStats
 {
-	public class PostStatsPersistService : InterfacePostStatsPersistService
+	public class PostStatsPersistService : BasePostStatsService, InterfacePostStatsPersistService
 	{
-		public Post[] Posts { get; set; }
-
-		public string? Directory { get; set; }
-
-		private InterfacePostRepository repository;
-
-		public PostStatsPersistService()
+		public PostStatsPersistService() : base()
 		{
-			Posts = new Post[] {};
-			repository = new PostStatsRepository();
+		}
+
+		public PostStatsPersistService SetPosts(Post[] posts)
+		{
+			Posts = posts;
+			return this;
 		}
 
 		public async Task<bool> Store()
