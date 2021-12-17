@@ -1,6 +1,3 @@
-using System;
-using System.Globalization;
-
 namespace Tusba.Models.Application
 {
 	public struct Options
@@ -8,29 +5,21 @@ namespace Tusba.Models.Application
 		public string? Action { get; set; }
 		public string? PostId { get; set; }
 
-		public DateTime? Date { get; private set; }
-		public DateTime? BoundaryDate { get; private set; }
+		public DateRange Dates { get; private set; }
 
-		public Options setDate(string? value, bool isBoundary = false)
+		public void setDate()
 		{
-			var date = DateTime.Now;
-			DateTime.TryParseExact(value, "yyyy-MM-dd", null, DateTimeStyles.None, out date);
+			Dates = new DateRange();
+		}
 
-			if (isBoundary)
-			{
-				BoundaryDate = date;
-			}
-			else
-			{
-				Date = date;
-			}
+		public void setDate(string value)
+		{
+			Dates = new DateRange(value);
+		}
 
-			if (Date is not null && BoundaryDate is not null && Date > BoundaryDate)
-			{
-				(Date, BoundaryDate) = (BoundaryDate, Date);
-			}
-
-			return this;
+		public void setDate(string value, string boundary)
+		{
+			Dates = new DateRange(value, boundary);
 		}
 	}
 }

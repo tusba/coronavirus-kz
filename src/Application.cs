@@ -207,8 +207,8 @@ namespace CoronavirusKz
 		 */
 		private async Task ActionParse()
 		{
-			string s1 = options.Date?.ToString("yyyy-MM-dd") ?? "null";
-			string s2 = options.BoundaryDate?.ToString("yyyy-MM-dd") ?? "null";
+			string s1 = options.Dates.Date?.ToString("yyyy-MM-dd") ?? "null";
+			string s2 = options.Dates.Boundary?.ToString("yyyy-MM-dd") ?? "null";
 			await InteractiveLogger.Log($"TODO parse html into xml/json: {s1}, {s2}");
 		}
 
@@ -257,10 +257,16 @@ namespace CoronavirusKz
 			if (argCount is >= 2 and <=3 && args[0].ResolveApplicationAction() == ApplicationAction.PARSE_STATS)
 			{
 				options.Action = args[0];
-				options.setDate(args[1]);
-				if (argCount == 3)
+				switch (argCount)
 				{
-					options.setDate(args[2], true);
+					case 2:
+						options.setDate(args[1]);
+						break;
+					case 3:
+						options.setDate(args[1], args[2]);
+						break;
+					// default:
+					// 	options.setDate();
 				}
 
 				return options;
