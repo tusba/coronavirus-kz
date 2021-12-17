@@ -30,7 +30,7 @@ namespace Tusba.Components.Http
 		/**
 		 * @throws Exception
 		 */
-		public async Task<string> Get(string? postId)
+		public async Task<string> Get(string? postId = null)
 		{
 			string url = baseUrl + (postId is null ? "" : $"/{postId}");
 

@@ -14,7 +14,7 @@ namespace test
 			using (InterfaceHttpGet client = new WebIndexPage(url))
 			{
 				Assert.ThrowsAsync<ArgumentException>(async () => {
-					await client.Get(null);
+					await client.Get();
 				});
 			}
 		}
@@ -27,7 +27,7 @@ namespace test
 			using (InterfaceHttpGet client = new WebIndexPage(url))
 			{
 				Assert.ThrowsAsync<AggregateException>(async () => {
-					await client.Get(null);
+					await client.Get();
 				});
 			}
 		}
@@ -39,7 +39,7 @@ namespace test
 		{
 			using (InterfaceHttpGet client = new WebIndexPage(url))
 			{
-				string responseBody = await client.Get(null);
+				string responseBody = await client.Get();
 				Assert.True(responseBody.Length > 0);
 			}
 		}
