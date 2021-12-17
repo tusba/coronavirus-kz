@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Tusba.Components.Repositories.Post;
 using Tusba.Models;
 
 namespace Tusba.Components.Services.PostStats
@@ -30,19 +28,6 @@ namespace Tusba.Components.Services.PostStats
 			}
 
 			return true;
-		}
-
-		private void AdjustRepository(Post post)
-		{
-			var repo = (PostStatsRepository) repository;
-
-			repo.Type = post.Type;
-			repo.Date = post.Date;
-
-			if (!String.IsNullOrEmpty(Directory))
-			{
-				repo.Directory = Directory;
-			}
 		}
 	}
 }
