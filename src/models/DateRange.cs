@@ -29,5 +29,29 @@ namespace Tusba.Models
 				(Date, Boundary) = (Boundary, Date);
 			}
 		}
+
+		public DateTime[] Range()
+		{
+			if (Date is null)
+			{
+				return new DateTime[] {};
+			}
+
+			if (Boundary is null)
+			{
+				return new DateTime[] { (DateTime) Date };
+			}
+
+			int days = ((TimeSpan) (Boundary - Date)).Days + 1;
+			DateTime[] range = new DateTime[days];
+
+			DateTime date = (DateTime) Date;
+			for (int i = 0; i < days; i++, date = date.AddDays(1))
+			{
+				range[i] = date;
+			}
+
+			return range;
+		}
 	}
 }
