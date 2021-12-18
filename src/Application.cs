@@ -43,12 +43,15 @@ namespace CoronavirusKz
 			{
 				if (postRepo is null) {
 					postRepo = new PostRepository(startFromPostId);
-					postRepo.Directory = Configuration.Get("html.data.directory");
+					postRepo.Directory = Configuration.Get(HTML_DATA_DIRECTORY_ALIAS);
 				}
 
 				return postRepo;
 			}
 		}
+
+		const string HTML_DATA_DIRECTORY_ALIAS = "html.data.directory";
+		const string STATS_HTML_DATA_DIRECTORY_ALIAS = "stats.html.data.directory";
 
 		/** Constructors & Initializers */
 
@@ -108,8 +111,8 @@ namespace CoronavirusKz
 			string[] dataDirectories = new string[]
 			{
 				"app.data.directory",
-				"html.data.directory",
-				"stats.html.data.directory"
+				HTML_DATA_DIRECTORY_ALIAS,
+				STATS_HTML_DATA_DIRECTORY_ALIAS
 			};
 
 			foreach (string dirAlias in dataDirectories)
@@ -193,7 +196,7 @@ namespace CoronavirusKz
 
 			// save filtered post models' raw content
 			var persistService = new PostStatsPersistService();
-			persistService.SetPosts(statsPosts).Directory = Configuration.Get("stats.html.data.directory");
+			persistService.SetPosts(statsPosts).Directory = Configuration.Get(STATS_HTML_DATA_DIRECTORY_ALIAS);
 
 			if (!(await persistService.Store()))
 			{
@@ -207,6 +210,17 @@ namespace CoronavirusKz
 		 */
 		private async Task ActionParse()
 		{
+			var obtainService = new PostStatsObtainService();
+			obtainService.Directory = Configuration.Get(STATS_HTML_DATA_DIRECTORY_ALIAS);
+			obtainService.Types = new PostType[] { PostType.STATS_DISEASED, PostType.STATS_RECOVERED };
+			obtainService.Dates = options.Dates;
+
+			if (!(await obtainService.Fetch()))
+			{
+				throw new ApplicationRuntimeException("failed to obtain statistics from posts");
+			}
+			await PersistentLogger.Log($"Statistics obtained from {obtainService.Posts.Length} posts");
+
 			string s1 = options.Dates.Date?.ToString("yyyy-MM-dd") ?? "null";
 			string s2 = options.Dates.Boundary?.ToString("yyyy-MM-dd") ?? "null";
 			await InteractiveLogger.Log($"TODO parse html into xml/json: {s1}, {s2}");
