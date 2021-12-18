@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tusba.Enumerations.Post;
 using Tusba.Models;
 using PostType = Tusba.Enumerations.Post.Type;
 
@@ -51,7 +52,7 @@ namespace Tusba.Components.Services.PostStats
 		private Post CreatePost(PostType type, string date, string content)
 		{
 			return new Post(
-				$"{type.ToString()}/{date}",
+				$"{type.AsString()}/{date}",
 				date,
 				content
 			);

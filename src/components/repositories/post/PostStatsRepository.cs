@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Tusba.Components.FileSystem;
+using Tusba.Enumerations.Post;
 using PostType = Tusba.Enumerations.Post.Type;
 
 namespace Tusba.Components.Repositories.Post
@@ -46,13 +47,7 @@ namespace Tusba.Components.Repositories.Post
 			return await base.Store(content);
 		}
 
-		protected string SubDirectory => Type switch
-		{
-			PostType.STATS_DISEASED => "diseased",
-			PostType.STATS_PNEUMONIA => "pneumonia",
-			PostType.STATS_RECOVERED => "recovered",
-			_ => ""
-		};
+		protected string SubDirectory => Type.AsString();
 
 		private string ResolveDirectory(string directoryValue)
 		{

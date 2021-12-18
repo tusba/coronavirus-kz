@@ -19,6 +19,14 @@ namespace Tusba.Enumerations.Post
 
 	public static class TypeExtensions
 	{
+		public static string AsString(this Type t) => t switch
+		{
+			Type.STATS_DISEASED => "diseased",
+			Type.STATS_PNEUMONIA => "pneumonia",
+			Type.STATS_RECOVERED => "recovered",
+			_ => ""
+		};
+
 		public static Type ResolvePostType(this string s)
 		{
 			var matcher = new PostMatcher(s);
