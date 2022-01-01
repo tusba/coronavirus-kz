@@ -8,11 +8,11 @@ namespace Tusba.Patterns.ChainOfResponsibility
 
 		public BaseHandler(BaseHandler<Q, R>? next = null) => Next = next;
 
-		public R? handle(Q query)
+		public virtual R? Handle(Q query)
 		{
 			if (Next is not null)
 			{
-				return Next.handle(query);
+				return Next.Handle(query);
 			}
 
 			return DefaultResult;

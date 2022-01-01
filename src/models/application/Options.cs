@@ -12,6 +12,11 @@ namespace Tusba.Models.Application
 			Dates = new DateRange();
 		}
 
+		public void setDate(DateRange value)
+		{
+			Dates = value;
+		}
+
 		public void setDate(string value)
 		{
 			Dates = new DateRange(value);

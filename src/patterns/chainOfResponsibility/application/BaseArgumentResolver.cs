@@ -7,6 +7,7 @@ namespace Tusba.Patterns.ChainOfResponsibility.Application
 		protected override Options DefaultResult => new Options();
 
 		public BaseArgumentResolver(BaseArgumentResolver? next = null) : base(next)
-		{}
+		{
+		}
 	}
 }
