@@ -5,6 +5,11 @@ namespace Tusba.Components.Factories.Application
 {
 	public class FactoryArgumentResolver : InterfaceFactoryMethod<InterfaceArgumentResolver>
 	{
-		public InterfaceArgumentResolver FactoryInstance => new SingleArgumentResolver();
+		public InterfaceArgumentResolver FactoryInstance =>
+			new SingleArgumentResolver(
+				new ParseActionResolver(
+					new DoubleArgumentResolver()
+				)
+			);
 	}
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Tusba.Components.Configuration;
 using Tusba.Components.Decorators;
 using Tusba.Components.Exceptions;
+using Tusba.Components.Factories.Application;
 using Tusba.Components.FileSystem;
 using Tusba.Components.Http;
 using Tusba.Components.Logging;
@@ -16,9 +17,9 @@ using Tusba.Enumerations.Application;
 using ApplicationAction = Tusba.Enumerations.Application.Action;
 using PostType = Tusba.Enumerations.Post.Type;
 
+using Tusba.Models;
 using ApplicationState = Tusba.Models.Application.State;
 using ApplicationOptions = Tusba.Models.Application.Options;
-using Tusba.Models;
 
 namespace CoronavirusKz
 {
@@ -246,51 +247,7 @@ namespace CoronavirusKz
 
 		private static ApplicationOptions ResolveArgs(string[] args)
 		{
-			var options = new ApplicationOptions();
-			int argCount = args.Length;
-			int postId;
-
-			switch (argCount)
-			{
-				case 0:
-					return options;
-
-				case 1:
-					if (int.TryParse(args[0], out postId))
-					{
-						options.PostId = args[0];
-					}
-					else
-					{
-						options.Action = args[0];
-					}
-
-					return options;
-			}
-
-			if (argCount is >= 2 and <=3 && args[0].ResolveApplicationAction() == ApplicationAction.PARSE_STATS)
-			{
-				options.Action = args[0];
-				switch (argCount)
-				{
-					case 2:
-						options.setDate(args[1]);
-						break;
-					case 3:
-						options.setDate(args[1], args[2]);
-						break;
-					// default:
-					// 	options.setDate();
-				}
-
-				return options;
-			}
-
-			(options.PostId, options.Action) = int.TryParse(args[0], out postId)
-				? (args[0], args[1])
-				: (args[1], args[0]);
-
-			return options;
+			return new FactoryArgumentResolver().FactoryInstance.Handle(args);
 		}
 
 		/** Main methods */

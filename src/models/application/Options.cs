@@ -7,22 +7,22 @@ namespace Tusba.Models.Application
 
 		public DateRange Dates { get; private set; }
 
-		public void setDate()
+		public void SetDate()
 		{
 			Dates = new DateRange();
 		}
 
-		public void setDate(DateRange value)
+		public void SetDate(DateRange value)
 		{
 			Dates = value;
 		}
 
-		public void setDate(string value)
+		public void SetDate(string value)
 		{
 			Dates = new DateRange(value);
 		}
 
-		public void setDate(string value, string boundary)
+		public void SetDate(string value, string boundary)
 		{
 			Dates = new DateRange(value, boundary);
 		}

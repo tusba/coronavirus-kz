@@ -18,7 +18,7 @@ namespace Tusba.Patterns.ChainOfResponsibility.Application
 			string arg = query[0];
 			var options = new Options();
 
-			if (int.TryParse(arg, out int postId))
+			if (IsPostId(arg))
 			{
 				options.PostId = arg;
 			}
