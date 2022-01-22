@@ -33,7 +33,7 @@ namespace test
 		}
 
 		[Theory]
-		[InlineData("http://nikvel.ru")]
+		[InlineData("http://httpforever.com/")]
 		[InlineData("https://github.com")]
 		public async void GetTest(string url)
 		{

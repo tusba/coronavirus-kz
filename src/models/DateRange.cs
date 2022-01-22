@@ -10,15 +10,9 @@ namespace Tusba.Models
 
 		public static string Format { get; set; } = "yyyy-MM-dd";
 
-		public DateRange()
-		{
-			Date = DateTime.Now;
-		}
+		public DateRange() => Date = DateTime.Now;
 
-		public DateRange(string date)
-		{
-			Date = DateUtil.Parse(date, Format);
-		}
+		public DateRange(string date) => Date = DateUtil.Parse(date, Format);
 
 		public DateRange(string date, string boundary) : this(date)
 		{
@@ -52,6 +46,44 @@ namespace Tusba.Models
 			}
 
 			return range;
+		}
+
+		public override bool Equals(object? obj)
+		{
+			return obj is not null && Equals((DateRange) obj);
+		}
+
+		public bool Equals(DateRange other)
+		{
+			if (other is null)
+			{
+				return false;
+			}
+
+			bool dateEquals = Date?.ToString(Format) == other.Date?.ToString(Format);
+			bool boundaryEquals = Boundary?.ToString(Format) == other.Boundary?.ToString(Format);
+
+			return dateEquals && boundaryEquals;
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(Date?.ToString(Format), Boundary?.ToString(Format));
+		}
+
+		public override string ToString()
+		{
+			if (Date?.ToString(Format) is string date)
+			{
+				if (Boundary?.ToString(Format) is string boundary)
+				{
+					return $"{date}/{boundary}";
+				}
+
+				return date;
+			}
+
+			return "N/A";
 		}
 	}
 }

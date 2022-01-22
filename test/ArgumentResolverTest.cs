@@ -1,7 +1,6 @@
 using System.Reflection;
 using Xunit;
 using Tusba.Components.Factories.Application;
-using Tusba.Models;
 using Tusba.Models.Application;
 using Tusba.Patterns.ChainOfResponsibility.Application;
 using ApplicationAction = Tusba.Enumerations.Application.Action;
@@ -19,12 +18,32 @@ namespace test
 		// 2 arguments
 		[InlineData("12345", "do-something", null, "12345", "do-something")]
 		[InlineData("12345", "do-something", null, "do-something", "12345")]
-		public void FactoryInstanceTest(string? postId, string? action, DateRange dates, params string[] args)
+		// "parse" action
+		[InlineData(null, "parse", new string[] {}, "parse")]
+		[InlineData(null, "parse", new string[] { "2022-01-15" }, "parse", "2022-01-15")]
+		[InlineData(null, "parse", new string[] { "2022-01-29", "2021-12-31" }, "parse", "2022-01-29", "2021-12-31")]
+		public void FactoryInstanceTest(string? postId, string? action, string[]? dates, params string[] args)
 		{
 			var options = new Options();
+
 			options.PostId = postId;
 			options.Action = action;
-			options.SetDate(dates);
+
+			if (action == "parse")
+			{
+				switch (dates?.Length)
+				{
+					case 0:
+						options.SetDate();
+						break;
+					case 1:
+						options.SetDate(dates[0]);
+						break;
+					case 2:
+						options.SetDate(dates[0], dates[1]);
+						break;
+				}
+			}
 
 			Assert.Equal(options, new FactoryArgumentResolver().FactoryInstance.Handle(args));
 		}

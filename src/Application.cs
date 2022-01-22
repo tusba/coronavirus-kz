@@ -147,6 +147,7 @@ namespace CoronavirusKz
 				default:
 					await ActionFetch();
 					await ActionExtract();
+					await ActionParse();
 					return;
 			}
 		}
@@ -218,13 +219,11 @@ namespace CoronavirusKz
 
 			if (!(await obtainService.Fetch()))
 			{
-				throw new ApplicationRuntimeException("failed to obtain statistics from posts");
+				throw new ApplicationRuntimeException($"failed to obtain statistics from posts for {obtainService.Dates}");
 			}
-			await PersistentLogger.Log($"Statistics obtained from {obtainService.Posts.Length} posts");
+			await PersistentLogger.Log($"Statistics obtained from {obtainService.Posts.Length} posts for {obtainService.Dates}");
 
-			string s1 = options.Dates.Date?.ToString("yyyy-MM-dd") ?? "null";
-			string s2 = options.Dates.Boundary?.ToString("yyyy-MM-dd") ?? "null";
-			await InteractiveLogger.Log($"TODO parse html into xml/json: {s1}, {s2}");
+			await InteractiveLogger.Log($"TODO parse html into xml/json: {obtainService.Dates}");
 		}
 
 		/**

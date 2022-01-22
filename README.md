@@ -4,58 +4,66 @@ A console crawler that fetches and collects official daily statistics from posts
 
 ## Build
 
-```
+```bash
 cd src/
 dotnet build
 ```
 
 ## Run
 
-```
+```bash
 cd src/
 ```
 
 ### Run fetch and extract for latest post
 
-```
+```bash
 dotnet run
 ```
 
 ### Run fetch and extract from post ID
 
-```
+```bash
 dotnet run -- 5251
 ```
 
 ### Run fetch or extract for latest post
 
-```
+```bash
 dotnet run -- fetch
 ```
 
-```
+```bash
 dotnet run -- extract
 ```
 
 ### Run fetch or extract from post ID
 
-```
+```bash
 dotnet run -- 5251 fetch
 ```
+
 or
-```
+
+```bash
 dotnet run -- extract 5251
+```
+
+### Run parse for today
+
+```bash
+dotnet run -- parse
 ```
 
 ### Run parse for specific date
 
-```
+```bash
 dotnet run -- parse 2021-12-05
 ```
 
 ### Run parse for specific period
 
-```
+```bash
 dotnet run -- parse 2021-12-01 2021-12-05
 ```
 
@@ -67,12 +75,14 @@ dotnet run -- parse 2021-12-01 2021-12-05
 
 ## Tests
 
-```
+```bash
 cd test/
 dotnet test
 ```
+
 or
-```
+
+```bash
 cd test/
 dotnet test --filter "test.ClassName.MethodName"
 ```
