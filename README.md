@@ -15,13 +15,13 @@ dotnet build
 cd src/
 ```
 
-### Run fetch and extract for latest post
+### Run fetch and extract for latest post, then parse obtained data
 
 ```bash
 dotnet run
 ```
 
-### Run fetch and extract from post ID
+### Run fetch and extract from post ID, then parse obtained data
 
 ```bash
 dotnet run -- 5251

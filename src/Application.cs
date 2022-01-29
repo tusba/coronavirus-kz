@@ -21,6 +21,8 @@ using Tusba.Models;
 using ApplicationState = Tusba.Models.Application.State;
 using ApplicationOptions = Tusba.Models.Application.Options;
 
+using ArrayUtil = Tusba.Components.Util.Array;
+
 namespace CoronavirusKz
 {
 	public class Application
@@ -196,6 +198,14 @@ namespace CoronavirusKz
 				.ToArray();
 			await PersistentLogger.Log($"Total found {statsPosts.Length} posts containing statistics information");
 
+			// determine minimum & maximum dates from all statistics posts
+			var statsDateRange = ArrayUtil.MinMax(statsPosts.Select(post => post.Date).ToArray());
+			if (statsDateRange is not null)
+			{
+				var dateRange = ((string Min, string Max)) statsDateRange;
+				state.Dates = new DateRange(dateRange.Min, dateRange.Max);
+			}
+
 			// save filtered post models' raw content
 			var persistService = new PostStatsPersistService();
 			persistService.SetPosts(statsPosts).Directory = Configuration.Get(STATS_HTML_DATA_DIRECTORY_ALIAS);
@@ -215,7 +225,10 @@ namespace CoronavirusKz
 			var obtainService = new PostStatsObtainService();
 			obtainService.Directory = Configuration.Get(STATS_HTML_DATA_DIRECTORY_ALIAS);
 			obtainService.Types = new PostType[] { PostType.STATS_DISEASED, PostType.STATS_RECOVERED };
-			obtainService.Dates = options.Dates;
+			if ((state.Dates ?? options.Dates) is DateRange dates)
+			{
+				obtainService.Dates = dates;
+			}
 
 			if (!(await obtainService.Fetch()))
 			{
