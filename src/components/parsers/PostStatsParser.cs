@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tusba.Models;
+using Tusba.Patterns.Visitor.Export;
 
 namespace Tusba.Components.Parsers
 {
-	public class PostStatsParser : InterfacePostStatsParser
+	public class PostStatsParser : InterfacePostStatsParser, InterfaceExportable
 	{
 		public string RawContent { get; init; }
 
@@ -35,6 +36,11 @@ namespace Tusba.Components.Parsers
 
 				return entries.ToArray();
 			});
+		}
+
+		public async Task<bool> ReceiveExporter(InterfaceExporter exporter)
+		{
+			return await exporter.ExportPostStats(await Parse());
 		}
 	}
 }
