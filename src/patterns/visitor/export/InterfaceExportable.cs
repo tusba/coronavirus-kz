@@ -2,8 +2,8 @@ using System.Threading.Tasks;
 
 namespace Tusba.Patterns.Visitor.Export
 {
-	public interface InterfaceExportable : InterfaceVisitorReceiver
+	public interface InterfaceExportable<T> : InterfaceVisitorReceiver
 	{
-		Task<bool> ReceiveExporter(InterfaceExporter exporter);
+		Task<T> ReceiveExporter(InterfaceExporter<T> exporter);
 	}
 }

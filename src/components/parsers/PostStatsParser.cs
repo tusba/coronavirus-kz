@@ -7,7 +7,7 @@ using Tusba.Patterns.Visitor.Export;
 
 namespace Tusba.Components.Parsers
 {
-	public class PostStatsParser : InterfacePostStatsParser, InterfaceExportable
+	public class PostStatsParser : InterfacePostStatsParser, InterfaceExportable<string>
 	{
 		public string RawContent { get; init; }
 
@@ -38,7 +38,7 @@ namespace Tusba.Components.Parsers
 			});
 		}
 
-		public async Task<bool> ReceiveExporter(InterfaceExporter exporter)
+		public async Task<string> ReceiveExporter(InterfaceExporter<string> exporter)
 		{
 			return await exporter.ExportPostStats(await Parse());
 		}
