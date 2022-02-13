@@ -1,13 +1,11 @@
-using System;
 using System.IO;
-using System.Linq;
 using Xunit;
 using Tusba.Components.Parsers;
 using Tusba.Models;
 
 namespace test
 {
-	public class PostStatsParserTest : BaseTest
+	public class PostStatsParserTest : PostStatsTest
 	{
 		[Theory]
 		[InlineData("diseased/2021-12-11.html", new string[] {
@@ -58,12 +56,7 @@ namespace test
 
 			Assert.Equal(entries.Length, parsed.Length);
 
-			PostStats[] expected = entries
-				.Select((string entry) => {
-					var parts = entry.Split(" - ");
-					return new PostStats(parts[0], Int32.Parse(parts[1]));
-				})
-				.ToArray();
+			PostStats[] expected = FromStrings(entries);
 
 			Assert.Equal(expected, parsed);
 		}
