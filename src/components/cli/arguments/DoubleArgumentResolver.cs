@@ -1,6 +1,6 @@
 using Tusba.Models.Application;
 
-namespace Tusba.Patterns.ChainOfResponsibility.Application
+namespace Tusba.Components.Cli.Arguments
 {
 	public class DoubleArgumentResolver : BaseArgumentResolver
 	{

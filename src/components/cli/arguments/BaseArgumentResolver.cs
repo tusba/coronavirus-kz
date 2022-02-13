@@ -1,9 +1,10 @@
 using System;
 using Tusba.Enumerations.Application;
 using Tusba.Models.Application;
+using Tusba.Patterns.ChainOfResponsibility;
 using ApplicationAction = Tusba.Enumerations.Application.Action;
 
-namespace Tusba.Patterns.ChainOfResponsibility.Application
+namespace Tusba.Components.Cli.Arguments
 {
 	public abstract class BaseArgumentResolver : BaseHandler<string[], Options>, InterfaceArgumentResolver
 	{

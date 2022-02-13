@@ -1,8 +1,8 @@
 using System.Reflection;
 using Xunit;
+using Tusba.Components.Cli.Arguments;
 using Tusba.Components.Factories.Application;
 using Tusba.Models.Application;
-using Tusba.Patterns.ChainOfResponsibility.Application;
 using ApplicationAction = Tusba.Enumerations.Application.Action;
 
 namespace test

@@ -1,4 +1,4 @@
-using Tusba.Patterns.ChainOfResponsibility.Application;
+using Tusba.Components.Cli.Arguments;
 using Tusba.Patterns.FactoryMethod;
 
 namespace Tusba.Components.Factories.Application

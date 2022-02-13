@@ -1,8 +1,7 @@
-using System;
 using Tusba.Models.Application;
 using ApplicationAction = Tusba.Enumerations.Application.Action;
 
-namespace Tusba.Patterns.ChainOfResponsibility.Application
+namespace Tusba.Components.Cli.Arguments
 {
 	public class ParseActionResolver : BaseArgumentResolver
 	{
