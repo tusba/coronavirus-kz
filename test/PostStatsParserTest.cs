@@ -51,7 +51,7 @@ namespace test
 
 			string fileContent = await File.ReadAllTextAsync(filePath);
 
-			InterfacePostStatsParser postStatsParser = new PostStatsParser(fileContent);
+			InterfacePostStatsParser postStatsParser = PostStatsParserFactory.ExportableAsResult(fileContent);
 			PostStats[] parsed = await postStatsParser.Parse();
 
 			Assert.Equal(entries.Length, parsed.Length);

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -9,7 +10,7 @@ using Tusba.Patterns.Visitor.Export;
 
 namespace Tusba.Components.Exporters
 {
-	public class XmlExporter : InterfaceExporter<string>
+	public class XmlExporter<T> : InterfaceExporter<T> where T : IConvertible
 	{
 		private const string ELEMENT_ROOT = "PostStats";
 		private const string ELEMENT_NODE = "Entry";
@@ -19,12 +20,24 @@ namespace Tusba.Components.Exporters
 		protected PostStats[] Models { get; set; } = new PostStats[] { };
 		protected XElement XmlTree { get; set; } = new XElement(ELEMENT_ROOT);
 
-		public async Task<string> ExportPostStats(PostStats[] models)
+		public async Task<T> ExportPostStats(PostStats[] models)
 		{
 			Models = models;
 			BuildXmlTree();
 
-			return await ReturnXmlString();
+			Type resultType = typeof(T);
+
+			if (resultType == typeof(string))
+			{
+				return (T) Convert.ChangeType(await ReturnXmlContent(), resultType);
+			}
+
+			if (resultType == typeof(bool))
+			{
+				return (T) Convert.ChangeType(await StoreXmlContent(), resultType);
+			}
+
+			throw new NotImplementedException("Only string and bool types are supported");
 		}
 
 		protected void BuildXmlTree()
@@ -40,7 +53,7 @@ namespace Tusba.Components.Exporters
 			}
 		}
 
-		protected async Task<string> ReturnXmlString()
+		protected async Task<string> ReturnXmlContent()
 		{
 			using (var memoryStream = new MemoryStream())
 			{
@@ -56,6 +69,11 @@ namespace Tusba.Components.Exporters
 				// remove BOM from output XML
 				return StringUtil.RemoveBom(new UTF8Encoding(false).GetString(byteContent));
 			}
+		}
+
+		protected async Task<bool> StoreXmlContent()
+		{
+			return await Task.Run(() => false);
 		}
 	}
 }
