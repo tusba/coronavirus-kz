@@ -1,5 +1,9 @@
+using System.IO;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using StringUtil = Tusba.Components.Util.String;
 using Tusba.Models;
 using Tusba.Patterns.Visitor.Export;
 
@@ -14,19 +18,30 @@ namespace Tusba.Components.Exporters
 
 		public async Task<string> ExportPostStats(PostStats[] models)
 		{
-			return await Task.Run(() => {
-				var root = new XElement(ELEMENT_ROOT);
+			var root = new XElement(ELEMENT_ROOT);
 
-				foreach (var model in models)
-				{
-					root.Add(new XElement(ELEMENT_NODE,
-						new XElement(ELEMENT_REGION, model.Region),
-						new XElement(ELEMENT_QUANTITY, model.Quantity)
-					));
-				}
+			foreach (var model in models)
+			{
+				root.Add(new XElement(ELEMENT_NODE,
+					new XElement(ELEMENT_REGION, model.Region),
+					new XElement(ELEMENT_QUANTITY, model.Quantity)
+				));
+			}
 
-				return root.ToString(SaveOptions.DisableFormatting);
-			});
+			using (var memoryStream = new MemoryStream())
+			{
+				await root.SaveAsync(memoryStream, SaveOptions.DisableFormatting, new CancellationTokenSource().Token);
+
+				// rewind to the beginning after writing to the stream
+				memoryStream.Seek(0, SeekOrigin.Begin);
+
+				int contentSize = (int) memoryStream.Length;
+				var byteContent = new byte[contentSize];
+				await memoryStream.ReadAsync(byteContent, 0, contentSize);
+
+				// remove BOM from output XML
+				return StringUtil.RemoveBom(new UTF8Encoding(false).GetString(byteContent));
+			}
 		}
 	}
 }
