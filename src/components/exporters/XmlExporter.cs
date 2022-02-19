@@ -16,21 +16,35 @@ namespace Tusba.Components.Exporters
 		private const string ELEMENT_REGION = "Region";
 		private const string ELEMENT_QUANTITY = "Quantity";
 
+		protected PostStats[] Models { get; set; } = new PostStats[] { };
+		protected XElement XmlTree { get; set; } = new XElement(ELEMENT_ROOT);
+
 		public async Task<string> ExportPostStats(PostStats[] models)
 		{
-			var root = new XElement(ELEMENT_ROOT);
+			Models = models;
+			BuildXmlTree();
 
-			foreach (var model in models)
+			return await ReturnXmlString();
+		}
+
+		protected void BuildXmlTree()
+		{
+			XmlTree.RemoveAll();
+
+			foreach (var model in Models)
 			{
-				root.Add(new XElement(ELEMENT_NODE,
+				XmlTree.Add(new XElement(ELEMENT_NODE,
 					new XElement(ELEMENT_REGION, model.Region),
 					new XElement(ELEMENT_QUANTITY, model.Quantity)
 				));
 			}
+		}
 
+		protected async Task<string> ReturnXmlString()
+		{
 			using (var memoryStream = new MemoryStream())
 			{
-				await root.SaveAsync(memoryStream, SaveOptions.DisableFormatting, new CancellationTokenSource().Token);
+				await XmlTree.SaveAsync(memoryStream, SaveOptions.DisableFormatting, new CancellationTokenSource().Token);
 
 				// rewind to the beginning after writing to the stream
 				memoryStream.Seek(0, SeekOrigin.Begin);

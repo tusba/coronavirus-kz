@@ -2,7 +2,7 @@ namespace Tusba.Components.Util
 {
 	public class String
 	{
-		const char CHAR_BOM = '\uFEFF';
+		private const char CHAR_BOM = '\uFEFF';
 
 		public static string RemoveBom(string source)
 		{
