@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Tusba.Components.FileSystem;
 using Tusba.Enumerations.Post;
 using PostType = Tusba.Enumerations.Post.Type;
 
@@ -42,7 +41,7 @@ namespace Tusba.Components.Repositories.Post
 
 		public override async Task<bool> Store(string content)
 		{
-			FileStorage.ProvideDirectory(Directory, true);
+			ProvideDirectory(Directory, true);
 
 			return await base.Store(content);
 		}

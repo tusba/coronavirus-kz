@@ -37,8 +37,24 @@ namespace test
 		})]
 		public async void ExportPostStatsStoreTest(string fileName, string[] entries)
 		{
-			bool stored = await new XmlExporter<bool>().ExportPostStats(FromStrings(entries));
-			Assert.False(stored);
+			string exportTestDir = @"data/xml/export";
+			string exportDir = Path.Combine(testDir, exportTestDir);
+
+			CleanUp(exportDir, true);
+
+			var exporter = new XmlExporter<bool>
+			{
+				Directory = exportDir,
+				FileName = fileName
+			};
+
+			bool stored = await exporter.ExportPostStats(FromStrings(entries));
+			Assert.True(stored);
+
+			string filePath = Path.Combine(exportDir, fileName);
+			Assert.True(File.Exists(filePath));
+
+			CleanUp(exportDir);
 		}
 	}
 }

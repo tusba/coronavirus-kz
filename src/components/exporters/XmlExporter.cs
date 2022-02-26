@@ -3,14 +3,16 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
+using Tusba.Components.FileSystem;
 using StringUtil = Tusba.Components.Util.String;
 using Tusba.Models;
 using Tusba.Patterns.Visitor.Export;
 
 namespace Tusba.Components.Exporters
 {
-	public class XmlExporter<T> : InterfaceExporter<T> where T : IConvertible
+	public class XmlExporter<T> : FileStorage, InterfaceExporter<T> where T : IConvertible
 	{
 		private const string ELEMENT_ROOT = "PostStats";
 		private const string ELEMENT_NODE = "Entry";
@@ -19,6 +21,19 @@ namespace Tusba.Components.Exporters
 
 		protected PostStats[] Models { get; set; } = new PostStats[] { };
 		protected XElement XmlTree { get; set; } = new XElement(ELEMENT_ROOT);
+
+		private CancellationTokenSource AsyncCancellation = new CancellationTokenSource();
+		private Encoding ExportEncoding => new UTF8Encoding(false);
+		private (SaveOptions Options, CancellationToken Token) StreamSaveAsyncOptions => (
+			Options: SaveOptions.DisableFormatting,
+			Token: AsyncCancellation.Token
+		);
+		private XmlWriterSettings XmlWriterOptions => new XmlWriterSettings
+		{
+			Async = true,
+			Encoding = ExportEncoding,
+			Indent = false
+		};
 
 		public async Task<T> ExportPostStats(PostStats[] models)
 		{
@@ -57,7 +72,8 @@ namespace Tusba.Components.Exporters
 		{
 			using (var memoryStream = new MemoryStream())
 			{
-				await XmlTree.SaveAsync(memoryStream, SaveOptions.DisableFormatting, new CancellationTokenSource().Token);
+				var (Options, Token) = StreamSaveAsyncOptions;
+				await XmlTree.SaveAsync(memoryStream, Options, Token);
 
 				// rewind to the beginning after writing to the stream
 				memoryStream.Seek(0, SeekOrigin.Begin);
@@ -67,13 +83,30 @@ namespace Tusba.Components.Exporters
 				await memoryStream.ReadAsync(byteContent, 0, contentSize);
 
 				// remove BOM from output XML
-				return StringUtil.RemoveBom(new UTF8Encoding(false).GetString(byteContent));
+				return StringUtil.RemoveBom(ExportEncoding.GetString(byteContent));
 			}
 		}
 
 		protected async Task<bool> StoreXmlContent()
 		{
-			return await Task.Run(() => false);
+			if (Directory == String.Empty || FileName == String.Empty) {
+				return await Task.Run(() => false);
+			}
+
+			ProvideDirectory(Directory);
+
+			using (var xmlWriter = XmlWriter.Create(FileName, XmlWriterOptions))
+			{
+				try
+				{
+					await XmlTree.SaveAsync(xmlWriter, StreamSaveAsyncOptions.Token);
+					return true;
+				}
+				catch
+				{
+					return false;
+				}
+			}
 		}
 	}
 }

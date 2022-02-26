@@ -45,8 +45,10 @@ namespace CoronavirusKz
 			get
 			{
 				if (postRepo is null) {
-					postRepo = new PostRepository(startFromPostId);
-					postRepo.Directory = Configuration.Get(HTML_DATA_DIRECTORY_ALIAS);
+					postRepo = new PostRepository(startFromPostId)
+					{
+						Directory = Configuration.Get(HTML_DATA_DIRECTORY_ALIAS)
+					};
 				}
 
 				return postRepo;
@@ -94,9 +96,16 @@ namespace CoronavirusKz
 		 */
 		private static (InterfaceLogger app, InterfaceLogger error) InitializeLoggers()
 		{
-			FileLogger appFileLogger = new FileLogger(Configuration.Get("app.log.file"));
-			FileLogger errorFileLogger = new FileLogger(Configuration.Get("error.log.file"));
-			errorFileLogger.Directory = appFileLogger.Directory = Configuration.Get("app.log.directory");
+			string logDirectory = Configuration.Get("app.log.directory");
+
+			FileLogger appFileLogger = new FileLogger(Configuration.Get("app.log.file"))
+			{
+				Directory = logDirectory
+			};
+			FileLogger errorFileLogger = new FileLogger(Configuration.Get("error.log.file"))
+			{
+				Directory = logDirectory
+			};
 
 			if (!FileStorage.ProvideDirectory(appFileLogger.Directory))
 			{
@@ -222,9 +231,12 @@ namespace CoronavirusKz
 		 */
 		private async Task ActionParse()
 		{
-			var obtainService = new PostStatsObtainService();
-			obtainService.Directory = Configuration.Get(STATS_HTML_DATA_DIRECTORY_ALIAS);
-			obtainService.Types = new PostType[] { PostType.STATS_DISEASED, PostType.STATS_RECOVERED };
+			var obtainService = new PostStatsObtainService()
+			{
+				Directory = Configuration.Get(STATS_HTML_DATA_DIRECTORY_ALIAS),
+				Types = new PostType[] { PostType.STATS_DISEASED, PostType.STATS_RECOVERED }
+			};
+
 			if ((state.Dates ?? options.Dates) is DateRange dates)
 			{
 				obtainService.Dates = dates;
