@@ -1,5 +1,9 @@
 using System;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Tusba.Models;
+using StreamUtil = Tusba.Components.Util.Stream;
 
 namespace Tusba.Components.Exporters
 {
@@ -7,12 +11,34 @@ namespace Tusba.Components.Exporters
 	{
 		protected override async Task<string> ReturnContent()
 		{
-			return await Task.Run(() => "TODO JSON");
+			using (var memoryStream = new MemoryStream())
+			{
+				await SerializeContent(memoryStream);
+
+				return await StreamUtil.Read(memoryStream, ExportEncoding);
+			}
 		}
 
-		protected override async Task<bool> StoreContent()
+		protected override async Task<bool> StoreContentInternally()
 		{
-			return await Task.Run(() => false);
+			using (var fileStream = File.Create(FileName))
+			{
+				try
+				{
+					await SerializeContent(fileStream);
+
+					return true;
+				}
+				catch
+				{
+					return false;
+				}
+			}
+		}
+
+		private async Task SerializeContent(Stream stream)
+		{
+			await JsonSerializer.SerializeAsync<PostStats[]>(stream, Models);
 		}
 	}
 }
