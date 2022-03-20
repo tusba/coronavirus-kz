@@ -5,14 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using Tusba.Components.FileSystem;
 using StringUtil = Tusba.Components.Util.String;
 using Tusba.Models;
-using Tusba.Patterns.Visitor.Export;
 
 namespace Tusba.Components.Exporters
 {
-	public class XmlExporter<T> : FileStorage, InterfaceExporter<T> where T : IConvertible
+	public class XmlExporter<T> : BaseExporter<T> where T : IConvertible
 	{
 		private const string ELEMENT_ROOT = "PostStats";
 		private const string ELEMENT_NODE = "Entry";
@@ -35,24 +33,12 @@ namespace Tusba.Components.Exporters
 			Indent = false
 		};
 
-		public async Task<T> ExportPostStats(PostStats[] models)
+		public override async Task<T> ExportPostStats(PostStats[] models)
 		{
 			Models = models;
 			BuildXmlTree();
 
-			Type resultType = typeof(T);
-
-			if (resultType == typeof(string))
-			{
-				return (T) Convert.ChangeType(await ReturnXmlContent(), resultType);
-			}
-
-			if (resultType == typeof(bool))
-			{
-				return (T) Convert.ChangeType(await StoreXmlContent(), resultType);
-			}
-
-			throw new NotImplementedException("Only string and bool types are supported");
+			return await base.ExportPostStats(Models);
 		}
 
 		protected void BuildXmlTree()
@@ -68,7 +54,7 @@ namespace Tusba.Components.Exporters
 			}
 		}
 
-		protected async Task<string> ReturnXmlContent()
+		protected override async Task<string> ReturnContent()
 		{
 			using (var memoryStream = new MemoryStream())
 			{
@@ -87,7 +73,7 @@ namespace Tusba.Components.Exporters
 			}
 		}
 
-		protected async Task<bool> StoreXmlContent()
+		protected override async Task<bool> StoreContent()
 		{
 			if (Directory == String.Empty || FileName == String.Empty) {
 				return await Task.Run(() => false);

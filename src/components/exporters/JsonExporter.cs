@@ -1,14 +1,18 @@
+using System;
 using System.Threading.Tasks;
-using Tusba.Models;
-using Tusba.Patterns.Visitor.Export;
 
 namespace Tusba.Components.Exporters
 {
-	public class JsonExporter : InterfaceExporter<string>
+	public class JsonExporter<T> : BaseExporter<T> where T : IConvertible
 	{
-		public async Task<string> ExportPostStats(PostStats[] models)
+		protected override async Task<string> ReturnContent()
 		{
 			return await Task.Run(() => "TODO JSON");
+		}
+
+		protected override async Task<bool> StoreContent()
+		{
+			return await Task.Run(() => false);
 		}
 	}
 }
