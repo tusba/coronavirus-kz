@@ -12,10 +12,6 @@ namespace Tusba.Components.Services.PostStats
 		public PostType[] Types { get; set; } = new PostType[] {};
 		public DateRange Dates { get; set; } = new DateRange();
 
-		public PostStatsObtainService() : base()
-		{
-		}
-
 		public async Task<bool> Fetch()
 		{
 			var dates = Dates.Range()

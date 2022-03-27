@@ -6,15 +6,18 @@ using Tusba.Components.Configuration;
 using Tusba.Components.Decorators;
 using Tusba.Components.Exceptions;
 using Tusba.Components.Factories.Application;
+using Tusba.Components.Factories.Post;
 using Tusba.Components.FileSystem;
 using Tusba.Components.Http;
 using Tusba.Components.Logging;
 using Tusba.Components.Parsers;
 using Tusba.Components.Repositories.Post;
 using Tusba.Components.Services.PostStats;
+using Tusba.Patterns.Visitor.Export;
 
 using Tusba.Enumerations.Application;
 using ApplicationAction = Tusba.Enumerations.Application.Action;
+using Tusba.Enumerations.Post;
 using PostType = Tusba.Enumerations.Post.Type;
 
 using Tusba.Models;
@@ -27,6 +30,9 @@ namespace CoronavirusKz
 {
 	public class Application
 	{
+		private const string HTML_DATA_DIRECTORY_ALIAS = "html.data.directory";
+		private const string STATS_HTML_DATA_DIRECTORY_ALIAS = "stats.html.data.directory";
+
 		private static readonly InterfaceConfigurationReader Configuration = SystemConfiguration.Instance;
 		private static readonly InterfaceLogger InteractiveLogger = ConsoleLogger.Instance;
 		private static readonly InterfaceLogger PersistentLogger;
@@ -36,6 +42,10 @@ namespace CoronavirusKz
 		private readonly ApplicationAction? action;
 		private readonly ApplicationOptions options;
 		private readonly DateTime startedAt = DateTime.Now;
+
+		private readonly string postStatsFormat = PostStatsExporter<string>.Format;
+		private string StatsExportDataDirectoryAlias => $"{postStatsFormat}.data.directory";
+
 
 		private ApplicationState state = new ApplicationState();
 
@@ -54,9 +64,6 @@ namespace CoronavirusKz
 				return postRepo;
 			}
 		}
-
-		const string HTML_DATA_DIRECTORY_ALIAS = "html.data.directory";
-		const string STATS_HTML_DATA_DIRECTORY_ALIAS = "stats.html.data.directory";
 
 		/** Constructors & Initializers */
 
@@ -227,10 +234,15 @@ namespace CoronavirusKz
 		}
 
 		/**
+		 * 1. Fetch raw statistics data from previously obtained posts
+		 * 2. Parse & store it as structured statistics data
+		 *
+		 * @throws ApplicationConfigurationException
 		 * @throws ApplicationRuntimeException
 		 */
 		private async Task ActionParse()
 		{
+			// (1)
 			var obtainService = new PostStatsObtainService()
 			{
 				Directory = Configuration.Get(STATS_HTML_DATA_DIRECTORY_ALIAS),
@@ -248,7 +260,31 @@ namespace CoronavirusKz
 			}
 			await PersistentLogger.Log($"Statistics obtained from {obtainService.Posts.Length} posts for {obtainService.Dates}");
 
-			await InteractiveLogger.Log($"TODO parse html into xml/json: {obtainService.Dates}");
+			// (2)
+			InterfaceExporter<string> postStatsExporter = new PostStatsExporter<string>().FactoryInstance;
+			string postStatsExportDirectory = Configuration.Get(StatsExportDataDirectoryAlias);
+
+			var postStatsExportRepository = new PostStatsRepository()
+			{
+				FileExtenstion = postStatsFormat
+			};
+
+			foreach (var post in obtainService.Posts)
+			{
+				postStatsExportRepository.Type = post.Type;
+				postStatsExportRepository.Date = post.Date;
+				postStatsExportRepository.Directory = postStatsExportDirectory;
+
+				string structuredContent = await PostStatsParserFactory
+					.ExportableAsResult(post.Content)
+					.ReceiveExporter(postStatsExporter);
+
+				if (!(await postStatsExportRepository.Store(structuredContent)))
+				{
+					throw new ApplicationRuntimeException($"failed to parse & store statistics from post \"{post.Type.AsString()}\"/{post.Date}");
+				}
+			}
+			await PersistentLogger.Log($"Statistics parsed & stored in {postStatsExportDirectory}");
 		}
 
 		/**

@@ -7,17 +7,11 @@ namespace Tusba.Components.Services.PostStats
 {
 	public abstract class BasePostStatsService
 	{
-		public Post[] Posts { get; protected set; }
+		public Post[] Posts { get; protected set; } = new Post[] {};
 
 		public string? Directory { get; set; }
 
-		protected InterfacePostRepository repository;
-
-		public BasePostStatsService()
-		{
-			Posts = new Post[] {};
-			repository = new PostStatsRepository();
-		}
+		protected InterfacePostRepository repository = new PostStatsRepository();
 
 		protected void AdjustRepository(PostType type, string date)
 		{

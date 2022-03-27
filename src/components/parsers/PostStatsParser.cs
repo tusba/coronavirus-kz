@@ -9,6 +9,15 @@ namespace Tusba.Components.Parsers
 {
 	public class PostStatsParser<T> : InterfacePostStatsParser, InterfaceExportable<T>
 	{
+		private const string REGEX_PATTERN_REGION = @"(\bгород\s+\S+\b)|(\b[^>]+\s+область\b)";
+		private const string REGEX_PATTERN_SEPARATOR = @"\s*\W+\s*\D*";
+		private const string REGEX_PATTERN_QUANTITY = @"\d+";
+
+		private static readonly Regex RegExp = new Regex(
+			@$"({REGEX_PATTERN_REGION}){REGEX_PATTERN_SEPARATOR}({REGEX_PATTERN_QUANTITY})",
+			RegexOptions.IgnoreCase | RegexOptions.Multiline
+		);
+
 		public string RawContent { get; init; }
 
 		public PostStatsParser(string rawContent) => RawContent = rawContent;
@@ -16,12 +25,7 @@ namespace Tusba.Components.Parsers
 		public async Task<PostStats[]> Parse()
 		{
 			return await Task.Run(() => {
-				var region = @"(\bгород\s+\S+\b)|(\b[^>]+\s+область\b)";
-				var separator = @"\s*\W+\s*\D*";
-				var quantity = @"\d+";
-
-				var regExp = new Regex(@$"({region}){separator}({quantity})", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-				var match = regExp.Match(RawContent);
+				var match = RegExp.Match(RawContent);
 				var entries = new List<PostStats>(20);
 
 				while (match.Success)

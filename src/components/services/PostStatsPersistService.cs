@@ -5,10 +5,6 @@ namespace Tusba.Components.Services.PostStats
 {
 	public class PostStatsPersistService : BasePostStatsService, InterfacePostStatsPersistService
 	{
-		public PostStatsPersistService() : base()
-		{
-		}
-
 		public PostStatsPersistService SetPosts(Post[] posts)
 		{
 			Posts = posts;
